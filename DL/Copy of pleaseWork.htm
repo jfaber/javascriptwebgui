@@ -1,0 +1,1619 @@
+<!--								Made By:   Jeff Faber
+									For:       Bad Coders and to Replace FrontPage Code
+									Date	   May 31, 2005
+									
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Editor</title>
+<link rel="alternate stylesheet" type="text/css" href="EditorCSSIE.css" title="IECss" />
+<link rel="alternate stylesheet" type="text/css" href="EditorCSS.css" title="Other" />
+
+<script type="text/javascript">
+<!--
+//-----------------------------------------------Set Css and Selction--------------------------------------------
+if(navigator.appName!="Microsoft Internet Explorer"&& navigator.appName!=="Opera")
+{
+setActiveStyleSheet('Other');
+//document.props.selected.disabled=true;
+}
+else
+{
+setActiveStyleSheet('IECss');
+//document.props.selected.disabled=true;
+}
+if(navigator.appName=="Opera")
+{
+//document.props.selected.disabled=false;
+setActiveStyleSheet('Other');
+alert('Opera does not support cell selection, you must manualy enter you selected Cell');
+}
+
+ function setActiveStyleSheet(title) {
+   var i, a, main;
+   for(i=0; (a = document.getElementsByTagName("link")[i]); i++) {
+     if(a.getAttribute("rel").indexOf("style") != -1
+        && a.getAttribute("title")) {
+       a.disabled = true;
+       if(a.getAttribute("title") == title) a.disabled = false;
+     }
+   }
+}
+//-------------------------------------------Set Global Vars-------------------------------------------------
+var TrRuns=0;//hold run var
+var theHtml='';//hold Write var (killed)
+var pageTitle='';//prompt('Enter Page Title','Untitled'); //hold Page title (killed)
+var bgColor='';//prompt('Enter Background Color','#FFFFFF'); //hold BG color(killed)
+var clickChange=''; //hold click edit
+var tmpId='';// hold tmp ID
+var editOn=false; //hold Onclick HTML edit (disabled feature for now)
+var whatTable=0;//Multiple Tables
+var isSmall=false;//Hot Min
+var showMinAlert=true; //Show alert once
+var large=false; //Make it Large?
+var helpMe=0;
+var nameJSObjectsTop=0; //Uniuqe names for JS Objects
+var testImageMove=false;
+var imageid=''; //Hold to send to the move function
+var mouseRef=''; // set to REf for ID
+var isDynamic='';//style="position:absolute" // check if the cells will mover
+var isDynamich='style="position:absolute"'; // C to compare to isDynamic
+//----------------------------------------------Messages---------------------------------------------------
+var startCellMessage='No Data';//Starting Cell Message
+var noSel='Please Make a Selection'; //nothing selected to format
+var noCellS='No Cell Selected!'; //no cell is selected
+var fullScreenI='For Editing in full screen first make sure the back window is not locked, then select the back window, and press F11.'; //Full Screen Directions
+var saveIt='To save please make sure the back window is not locked then, select "File", then "Save Page As".'; //Save Page Info
+var madeBy='Created by Jeff Faber, if you have any questions or suggestions please send them to c1a9r8d5@gmail.com. Thanks for using my GUI. Also thanks to  Mozilla.org for the text editor.';
+var funcDisabled='This function has been disabled.';//Disabled option
+// HELP MESSAGES
+var hfont='This is the Starting Font Size of the Text in a Cell';
+var hselect='This is the Current Cell Selected. Lowest is the bottom Right in the First Table';
+var hCwidth='This is the Selected Cell\'s Width';
+var hCheight='This is the Selected Cell\'s Height';
+var hCTwidth='This is the Selected Table\'s Width';
+var hBorder='This is the Selected Table\'s Border';
+var hCcolor='This is the Selected Cell\'s Color. Comman color names such as red or blue may be used.';
+var hCBG='This is the Selected Cell\'s Background Image';
+var hDT='This is the Document Title';
+var hBBG='This is the Body\'s Background Color';
+var hcode='This is the Selected Cell\'s Html';
+var hDT='This is the Document Title';
+var hlock='Locking the Page Wil Disable the Back Widnow and Disallow any Change';
+var hEH='This Will Change the Size of the Editable Section Below';
+var hehe='WHAT HAVE YOU DONE!!! YOU BROKE THE INTERNET NOW YOUR FRICKEN SCREWED MAN... YOU BETTER SEND $200,000 to 123 main st. New Cleavlan, Idohio 00000, so I can fix it!';
+var dynamich='This allows you to make table cells Dynamic, and movable. To move them check thos box, then add a table, then open "Edit Dynamic Object" box, then click on the cell you want to move, and move it. If the box is no checked on cell creation you will not be able to move them ever. ';
+var tmp2;
+var IE = document.all?true:false;
+//---------------------------------------------Info--------------------------------------------------------
+alert(madeBy);//gemme credit!
+//**********************************************************************************************************
+//---------------------------------------------Hot Keys-----------------------------------------------------
+
+			function checkKeycode(e)
+			{
+				var keycode;
+				if (window.event)
+					keycode = window.event.keyCode;
+				else if (e)
+					keycode = e.which;
+						if(keycode==96)
+						{
+							//document.getElementById('propHTML').value += '<BR>';
+							//changeProp();
+							
+							if(isSmall)
+								{
+								isSmall=false;
+								minEdit(true);
+								}
+							else
+							{
+								isSmall=true;
+								minEdit(false);
+							}
+						}
+			}
+//----------------------------------------------------------------------------------------------------------
+//**********************************************************************************************************
+//--------------------------------------------Deselect All Cells--------------------------------------------
+
+function unSelect()
+{
+		document.props.propHeight.value='0'; //Cell Height
+		document.props.propWidth.value='0'; //Cell Width
+		document.props.tpropHeight.value='100%';//Table Height
+		document.props.tpropWidth.value='100%'; //Table Width
+		document.props.propBG.value=''; //Background Image
+		document.props.propBorder.value='1'; //Table Border
+		document.getElementById('propHTML').value=''; //Cell Inner HTML
+		document.props.selected.value='None'; //Selected Cell
+		document.props.propBGC.value=''; //Cell Background Color
+		document.props.propFS.value='12pt'; //Font Size in Cell
+		document.props.propTC.value=''; //Font Color in Cell
+		document.props.propDT.value=window.opener.document.title; // Document Title
+		document.props.propBBG.value='#FFFFFF'; // Body Background Color
+//		document.props.propIHeight.value=document.getElementById('edit').height; //IFrame Height
+
+}
+//----------------------------------------------------------------------------------------------------------
+//**********************************************************************************************************
+//var theHtml='<html><head><title>' + pageTitle + '</title></head><body bgcolor="' + bgColor + '" border="1"><table>'
+//var NuOfTd=prompt('Enter Number of Columns for table',1);
+//**********************************************************************************************************
+//**********************************************************************************************************
+//-----------------------------------------------Create Table----------------------------------------------
+function runIt()
+{
+if(whatTable==0)
+{
+
+	window.opener.document.getElementById('bodyID').style.backgroundColor='#FFFFFF';
+	document.getElementById('startIt').style.backgroundColor='white';
+		document.getElementById('startIt').value= 'Add Table';
+	if(window.opener.document.getElementById('StartPage'))
+		var nuOfTr=prompt('Enter Number of Rows for table',3);//hold Tr var
+	
+	var theHtml='';
+	var theCell='\n<table border="1" id="tableChange'+whatTable+'" width="100%" cellpadding="0" cellspacing="0" bgcolor='+bgColor+'>\n';
+	while(nuOfTr>0)
+	{
+		//alert(nuOfTr);
+		theHtml = theHtml+'<tr>';
+		theCell  = theCell+'\n  <tr>\n';
+		var TdRuns=prompt('Enter Number of Columns for row '+nuOfTr,3);
+		while(TdRuns > 0)
+		{
+				var tmpId ='Cell Id=' + whatTable + '_' + TdRuns + '_' + nuOfTr;
+			tmpW='';//Cell Height
+			tmpH='';//Cell Width
+			theHtml  = theHtml + '    <td width="'+tmpW+'" height="'+tmpH+'" name="TD'+TdRuns+'">Code</td>';
+			theCell  = theCell + '    <td width="'+tmpW+'" height="'+tmpH+'" id="TD'+whatTable+'_'+TdRuns+'_'+nuOfTr+'" onClick="javascript:if(window.Editor){window.Editor.cellSelect('+whatTable+','+TdRuns+','+nuOfTr+');if(window.Editor.isDynamic==window.Editor.isDynamich){window.Editor.moveImageTest(\'TD'+whatTable+'_'+TdRuns+'_'+nuOfTr+'\');}}"'+isDynamic+'>'+tmpId+'</td>\n';
+			//alert('TD'+TdRuns+'w'+nuOfTr);
+			//alert(theHtml);
+			TdRuns=(TdRuns*1)-1 ;
+			//runTds(TdRuns);
+	
+	
+		}
+		//runTds();
+		theHtml = theHtml+'  </tr>\n';
+		nuOfTr=(nuOfTr*1)-1 ;
+	}
+	if(nuOfTr<=0)
+	{
+		theHtml = theHtml+'</table></body></html>';
+		theCell  = theCell+'</table>\n';
+		if(1==1)
+			window.opener.document.getElementById('tableSet').innerHTML=theCell; 
+		else
+			document.all('tableSet').innerHTML=theCell;
+			
+	}
+}
+else
+{
+	//itsGone();
+	//return;
+	var newTable='';
+	//document.getElementById('startIt').value= 'Add Table';
+	//if(window.opener.document.getElementById('StartPage'))
+	var nuOfTr=prompt('Enter Number of Rows for table',3);//hold Tr var
+	
+	//var theHtml='';
+	var newTable='<table border="1" id="tableChange'+whatTable+'" height="100%" width="100%" cellpadding="0" cellspacing="0" bgcolor='+bgColor+'>\n';
+	while(nuOfTr>0)
+	{
+		//alert(nuOfTr);
+		//theHtml = theHtml+'<tr>';
+		newTable  = newTable+'<tr>\n';
+		var TdRuns=prompt('Enter Number of Columns for row '+nuOfTr,3)
+		while(TdRuns > 0)
+		{
+				var tmpId ='Cell Id=' + whatTable + '_' + TdRuns + '_' + nuOfTr;
+			tmpW='';//Cell Height
+			tmpH='';//Cell Width
+			//theHtml  = theHtml + '<td width="'+tmpW+'" height="'+tmpH+'" name="TD'+TdRuns+'">Code</td>';
+			newTable  = newTable + '<td width="'+tmpW+'" height="'+tmpH+'" id="TD'+whatTable+'_'+TdRuns+'_'+nuOfTr+'" onClick="javascript:if(window.Editor){window.Editor.cellSelect('+whatTable+','+TdRuns+','+nuOfTr+');if(window.Editor.isDynamic==window.Editor.isDynamich){window.Editor.moveImageTest(\'TD'+whatTable+'_'+TdRuns+'_'+nuOfTr+'\');}}"'+ isDynamic+'">'+tmpId+'</td>\n';
+			//alert('TD'+TdRuns+'w'+nuOfTr);
+			//alert(theHtml);
+			TdRuns=(TdRuns*1)-1 ;
+			//runTds(TdRuns);
+	
+	
+		}
+		//runTds();
+		//theHtml = theHtml+'</tr>';
+		nuOfTr=(nuOfTr*1)-1 ;
+	}
+	if(nuOfTr<=0)
+	{
+		//theHtml = theHtml+'</table></body></html>';
+		theCell  = theCell+'</table>';
+		//if(1==1)
+			window.opener.document.getElementById('tableSet').innerHTML+=newTable; 
+		//changeProp();
+			//else
+			//document.all('tableSet').innerHTML=theCell;
+			
+	}
+}
+whatTable++;
+//alert(whatTable); 
+}
+//----------------------------------------------------------------------------------------------------------
+//**********************************************************************************************************
+//---------------------------------------------Preveiw Page(disabled)---------------------------------------
+function previewIt()
+{
+			itsGone();
+			return;
+			newwindow2=window.open('','Slide Show','fullscreen=yes, status=no, height=570, width=700,toolbar=0,scrollbars=0,resizable=0,left = 200,top = 100');
+			var tmp = newwindow2.document;
+			tmp.write('<html><head><title>' + pageTitle + '</title><script type="text/javascript">function cellSelect\(\)\{\}<\/script></head><body leftmargin="0" topmargin="0" bgcolor="' + bgColor + '" >'+window.opener.document.getElementById('tableSet').innerHTML+'</table></body></html>');
+			tmp.close();
+			newwindow2.focus();
+
+}
+//----------------------------------------------------------------------------------------------------------
+//**********************************************************************************************************
+//----------------------------------------------------Disabled Function-------------------------------------
+function itsGone()
+{
+alert(funcDisabled);
+}
+//---------------------------------------------------------------------------------------------------------
+//**********************************************************************************************************
+//--------------------------------------------------Select A Cell-------------------------------------------
+function cellSelect(whatTable,tData,tRow)
+{
+	mouseRunP();
+	var tmpId = whatTable + '_' + tData + '_' + tRow;
+	document.props.selected.value=tmpId;
+	var tableNu=document.props.selected.value.charAt(0);
+	var typeOfSel='TD';
+	if(tData!='body')
+	{
+		document.props.propHeight.value=window.opener.document.getElementById(typeOfSel+tmpId).height;
+		document.props.propWidth.value=window.opener.document.getElementById(typeOfSel+tmpId).width;
+		document.props.propBG.value=window.opener.document.getElementById(typeOfSel+tmpId).bgcolor;
+		document.props.propBorder.value=window.opener.document.getElementById('tableChange'+tableNu).border;
+		document.props.tpropWidth.value=window.opener.document.getElementById('tableChange'+tableNu).width;
+		document.props.tpropHeight.value=window.opener.document.getElementById('tableChange'+tableNu).height;
+		document.getElementById('propHTML').value=window.opener.document.getElementById(typeOfSel+tmpId).innerHTML;
+		document.props.propBGC.value=window.opener.document.getElementById(typeOfSel+tmpId).style.backgroundColor;
+		document.props.propFS.value=window.opener.document.getElementById(typeOfSel+tmpId).style.fontSize;
+		document.props.propTC.value=window.opener.document.getElementById(typeOfSel+tmpId).style.color;
+		document.props.propDT.value=window.opener.document.title;
+		document.props.propBBG.value=window.opener.document.getElementById('bodyID').style.backgroundColor;
+		document.getElementById('edit').contentWindow.document.body.innerHTML=document.getElementById('propHTML').value;
+		document.getElementById('edit').style.backgroundColor=window.opener.document.getElementById(typeOfSel+tmpId).style.backgroundColor;
+		document.getElementById('frameBack').style.backgroundColor=window.opener.document.getElementById('bodyID').style.backgroundColor;
+		document.getElementById('propIHeight').value.value=document.getElementById('edit').height;
+		//Editor.focus();
+		if(editOn==false)
+		{
+			//window.opener.document.getElementById('TD'+document.props.selected.value).innerHTML='<form name="editIt"><input type="text" name="inEdit" value="'+window.opener.document.getElementById('TD'+document.props.selected.value).innerHTML+'" onBlur=document.getElementById(\'TD\'+document.props.selected.value).innerHTML=document.editIt.inEdit.value></form>';
+			editOn=true;
+			//alert(editOn);
+		}
+	}
+	else 
+	{
+		document.props.propHeight.value='N/';
+		document.props.propWidth.value=window.opener.document.getElementById(typeOfSel+tmpId).width;
+		document.props.propBG.value=window.opener.document.getElementById(typeOfSel+tmpId).bgcolor;
+		document.props.propBorder.value=window.opener.document.getElementById('tableChange'+tableNu).border;
+		document.props.tpropWidth.value=window.opener.document.getElementById('tableChange'+tableNu).width;
+		document.props.tpropHeight.value=window.opener.document.getElementById('tableChange'+tableNu).height;
+		document.getElementById('propHTML').value=window.opener.document.getElementById(typeOfSel+tmpId).innerHTML;
+		document.props.propBGC.value=window.opener.document.getElementById(typeOfSel+tmpId).style.backgroundColor;
+		document.props.propFS.value=window.opener.document.getElementById(typeOfSel+tmpId).style.fontSize;
+		document.props.propTC.value=window.opener.document.getElementById(typeOfSel+tmpId).style.color;
+		document.props.propDT.value=window.opener.document.title;
+		document.props.propBBG.value=window.opener.document.getElementById('bodyID').style.backgroundColor;
+		document.getElementById('edit').contentWindow.document.body.innerHTML=document.getElementById('propHTML').value;
+		document.getElementById('edit').style.backgroundColor=window.opener.document.getElementById(typeOfSel+tmpId).style.backgroundColor;
+		document.getElementById('frameBack').style.backgroundColor=window.opener.document.getElementById('bodyID').style.backgroundColor;
+		document.getElementById('propIHeight').value.value=document.getElementById('edit').height;
+	}
+return;
+}
+//----IP 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+function mouseRunP()
+{
+//alert(tempX+''+tempY);
+}
+
+//----------------------------------------------------------------------------------------------------------
+//**********************************************************************************************************
+//---------------------------------------------Change A Cell Property---------------------------------------
+function changeProp(goAnyhow)
+{
+	var tableNu=document.props.selected.value.charAt(0);
+	window.opener.document.title=document.props.propDT.value;
+	window.opener.document.getElementById('titleChange').innerHTML='<script type="text/javascript">onLoad=document.title=\''+document.props.propDT.value+'\'\;<\/script>'
+	document.getElementById('edit').height=document.getElementById('propIHeight').value;
+	document.getElementById('propHTML').style.height=document.getElementById('propIHeight').value+'px';
+	if(document.props.selected.value=='None' &&  goAnyhow != 'yes')
+	{
+	alert(noCellS);
+	return;
+	}
+	window.opener.document.getElementById('TD'+document.props.selected.value).height=document.props.propHeight.value;
+	window.opener.document.getElementById('TD'+document.props.selected.value).width=document.props.propWidth.value;
+	window.opener.document.getElementById('TD'+document.props.selected.value).bgcolor=document.props.propBG.value;
+	window.opener.document.getElementById('TD'+document.props.selected.value).style.background = 'url('+ window.opener.document.getElementById('TD'+document.props.selected.value).bgcolor +')';
+	window.opener.document.getElementById('tableChange'+tableNu).border=document.props.propBorder.value;
+	window.opener.document.getElementById('tableChange'+tableNu).height=document.props.tpropHeight.value;
+	window.opener.document.getElementById('tableChange'+tableNu).width=document.props.tpropWidth.value;
+	window.opener.document.getElementById('TD'+document.props.selected.value).innerHTML=document.getElementById('propHTML').value.replace('`','');		
+	window.opener.document.getElementById('TD'+document.props.selected.value).style.backgroundColor=document.props.propBGC.value;		
+	window.opener.document.getElementById('TD'+document.props.selected.value).style.fontSize=document.props.propFS.value;
+	window.opener.document.getElementById('TD'+document.props.selected.value).style.color=document.props.propTC.value;
+	window.opener.document.getElementById('bodyID').style.backgroundColor=document.props.propBBG.value;
+	document.getElementById('edit').style.backgroundColor=window.opener.document.getElementById('TD'+document.props.selected.value).style.backgroundColor;
+	document.getElementById('frameBack').style.backgroundColor=window.opener.document.getElementById('bodyID').style.backgroundColor;
+	goAnyhow!='no';
+	return;
+}
+//----------------------------------------------------------------------------------------------------------
+//**********************************************************************************************************
+//---------------------------------------On Click HTML Edit(disabled)---------------------------------------
+function editHTML()
+{
+	//window.opener.document.getElementById('TD'+document.props.selected.value).innerHTML='<form name="editIt"><input type="text" name="inEdit" value="'+window.opener.document.getElementById('TD'+document.props.selected.value).innerHTML+'" onBlur=document.getElementById(\'TD\'+document.props.selected.value).innerHTML=document.editIt.inEdit.value;,editOn=false"></form>';
+}
+//----------------------------------------------------------------------------------------------------------
+//**********************************************************************************************************
+//-------------------------------------------Test Mouse Position(gone)--------------------------------------
+function posTest()
+{
+	//alert(tempX+' '+tempY);
+}
+//----------------------------------------------------------------------------------------------------------
+//**********************************************************************************************************
+//-----------------------------------MOUSE GRAB FUNCTION STUFF IS HERE--------------------------------------
+// Detect if the browser is IE or not.
+// If it is not IE, we assume that the browser is NS.
+var IE = document.all?true:false
+
+// If NS -- that is, !IE -- then set up for mouse capture
+if (!IE) window.opener.document.captureEvents(Event.MOUSEMOVE)
+
+// Set-up to use getMouseXY function onMouseMove
+window.opener.document.onmousemove = getMouseXY;
+
+// Temporary variables to hold mouse x-y pos.s
+var tempX = 0
+var tempY = 0
+
+// Main function to retrieve mouse x-y pos.s
+
+function runTestImage(objectType)
+{
+
+nameJSObjectsTop++;
+if(objectType=='image')
+	addy='<img src="'+prompt('What image Path?','')+'" id="PhotoId'+nameJSObjectsTop+'" onclick="javascript:if(window.Editor){window.Editor.moveImageTest(\'PhotoId'+nameJSObjectsTop+'\');}" style="position:absolute";>';
+if(objectType=='text')
+	addy='<div id="TextId'+nameJSObjectsTop+'" onclick="javascript:if(window.Editor){window.Editor.moveImageTest(\'TextId'+nameJSObjectsTop+'\');}" style="position:absolute;">' +prompt('What Text?','') + '</div>';
+document.getElementById('propHTML').value+=addy;
+alert('You can change the Properties from edit box in which you created this in.');
+changeProp();
+}
+
+function moveImageTest(imageidS)
+{
+imageid=imageidS;
+if(testImageMove==false)
+testImageMove=true;
+else
+testImageMove=false;
+}
+
+
+function hideMouse(e){
+alert('hideMouse');
+  
+    }
+
+
+document.onmousemove=transition();
+function transition()
+{
+if (testImageMove==true)
+	hideMouse();
+}
+
+function getMouseXY(e) {
+
+  if (IE) { // grab the x-y pos.s if browser is IE
+    tempX = event.clientX + window.opener.document.body.scrollLeft
+    tempY = event.clientY + window.opener.document.body.scrollTop
+  } else {  // grab the x-y pos.s if browser is NS
+    tempX = e.pageX
+    tempY = e.pageY
+  }  
+  if (tempX < 0){tempX = 0}
+  if (tempY < 0){tempY = 0}  
+  if(window.debugW)
+  	{
+	if(testImageMove==false||!mouseRef.width)
+	{
+	window.debugW.document.getElementById('debugX').value=tempX;
+	window.debugW.document.getElementById('debugY').value=tempY;
+	window.debugW.document.getElementById('imageId').value=imageid;
+	//window.debugW.document.getElementById('transLevel').value=document.getElementById(imageid).style.opacity;
+
+	}
+	else
+	{
+	window.debugW.document.getElementById('debugX').value=(tempX-mouseRef.width/2);
+	window.debugW.document.getElementById('debugY').value=(tempY-mouseRef.height/2);
+	window.debugW.document.getElementById('imageId').value=imageid;
+	//window.debugW.document.getElementById('transLevel').value=document.getElementById(imageid).style.opacity;
+	}
+	if(testImageMove)
+	{
+		
+		mouseRef=window.opener.document.getElementById(imageid);
+	    if (e) {
+		if(mouseRef.width)
+		{
+        mouseRef.style.left=e.pageX-mouseRef.width/2;
+        mouseRef.style.top=e.pageY-mouseRef.height/2;
+		}
+		else
+		{
+		mouseRef.style.left=e.pageX-7;
+		mouseRef.style.top=e.pageY-15;
+		}
+    	}
+    else {
+	
+        mouseRef.style.left=event.x;
+        mouseRef.style.top=event.y;  
+		}
+	}
+	}
+  return true
+}
+//----------------------------------------------------------------------------------------------------------
+//**********************************************************************************************************
+//---------------------------------------More change on Click(disabled)-------------------------------------
+function changeOnClick(whatTo)
+{
+	if(whatTo=='wi')
+	{
+		alert('Im Here'); 
+		changeProp('',tempX-document.props.propWidth.value);
+		
+	}
+}
+//----------------------------------------------------------------------------------------------------------
+//**********************************************************************************************************
+//------------------------------------------Make a Link-----------------------------------------------------
+function linkMake()
+{
+	var locationLink=prompt('Link location','http://');
+	if(locationLink==null)
+		return;
+	var textLink=prompt('Text for the Link','Link');
+	if(textLink==null)
+		return;
+	document.getElementById('propHTML').value += '<a href="'+locationLink+'">'+textLink+'</a>';
+	changeProp();
+}
+//----------------------------------------------------------------------------------------------------------
+//**********************************************************************************************************
+//-----------------------------------------Formating Stuff--------------------------------------------------
+function vAlign(whereTo)
+{
+	if(document.props.selected.value=='None')
+	{
+	alert('No cell selected');
+	return;
+	}
+	if(whereTo=='top')
+	{
+		window.opener.document.getElementById('TD'+document.props.selected.value).style.verticalAlign = 'top';
+	}
+	if(whereTo=='mid')
+	{
+		window.opener.document.getElementById('TD'+document.props.selected.value).style.verticalAlign = 'middle';
+	}
+	if(whereTo=='bot')
+	{
+		window.opener.document.getElementById('TD'+document.props.selected.value).style.verticalAlign = 'bottom';
+	}
+	if(whereTo=='left')
+	{
+		window.opener.document.getElementById('TD'+document.props.selected.value).style.textAlign = 'left';
+	}
+	if(whereTo=='center')
+	{
+		window.opener.document.getElementById('TD'+document.props.selected.value).style.textAlign = 'center';
+	}
+	if(whereTo=='right')
+	{
+		window.opener.document.getElementById('TD'+document.props.selected.value).style.textAlign = 'right';
+	}
+	if(whereTo=='b')
+		addFormat('<strong>','</strong>');
+	if(whereTo=='i')
+		addFormat('<em>','</em>');
+	if(whereTo=='u')
+		addFormat('<u>','</u>'); 
+	if(whereTo=='+')
+	{
+		var fontSize=window.opener.document.getElementById('TD'+document.props.selected.value).style.fontSize.split('p');
+		if(fontSize==null||fontSize=='')
+			fontSize[0]=13;
+		window.opener.document.getElementById('TD'+document.props.selected.value).style.fontSize=(fontSize[0]*1+1)+'pt';
+		document.props.propFS.value=window.opener.document.getElementById('TD'+document.props.selected.value).style.fontSize;
+	}
+	if(whereTo=='-')
+	{
+		var fontSize=window.opener.document.getElementById('TD'+document.props.selected.value).style.fontSize.split('p');
+		if(fontSize==null||fontSize=='')
+			fontSize[0]=11;
+		window.opener.document.getElementById('TD'+document.props.selected.value).style.fontSize=(fontSize[0]*1-1)+'pt';
+		document.props.propFS.value=window.opener.document.getElementById('TD'+document.props.selected.value).style.fontSize;
+	}
+	if(whereTo=='clean')
+	{
+		window.opener.document.getElementById('TD'+document.props.selected.value).style.fontWeight = 'normal';
+		window.opener.document.getElementById('TD'+document.props.selected.value).style.fontStyle = 'normal';
+		window.opener.document.getElementById('TD'+document.props.selected.value).style.textDecoration = 'none';
+		window.opener.document.getElementById('TD'+document.props.selected.value).style.fontSize='12pt';
+		formatClean('<strong>');
+		formatClean('</strong>');
+		formatClean('<em>');
+		formatClean('</em>');
+		formatClean('<u>');
+		formatClean('</u>');
+	}
+}
+//----------------------------------------------------------------------------------------------------------
+//**********************************************************************************************************
+//-------------------------------------------Selection Formatting-------------------------------------------
+function addFormat(startTag,endTag)
+{
+		var tmpSplit=document.getElementById('propHTML').value.split(window.opener.getSelection());	
+		var nuRuns=tmpSplit.length;
+		var curArray=1;
+		if(tmpSplit[0]==null)
+			tmpSplit[0]='';
+		if(tmpSplit[1]==null)
+			tmpSplit[1]='';
+		document.getElementById('propHTML').value='';
+		while(nuRuns>0)
+		{
+		if(window.opener.getSelection()!=''&&window.opener.getSelection()!=null)		
+			document.getElementById('propHTML').value+=tmpSplit[curArray-1]+startTag+window.opener.getSelection()+endTag+tmpSplit[curArray];
+		else
+			{
+			alert(noSel);
+			return;
+			}
+			curArray++;
+			nuRuns=nuRuns-2;
+		}
+		changeProp();	
+}
+//----------------------------------------------------------------------------------------------------------
+//**********************************************************************************************************
+//----------------------------------------Remove Selection Format-------------------------------------------
+
+function formatClean(formatting)
+{
+		var tmpSplit=document.getElementById('propHTML').value.split(formatting);
+		var nuRuns=tmpSplit.length;
+		var curArray=0;
+		if(nuRuns>0)
+			document.getElementById('propHTML').value='';
+		while(nuRuns>0)
+		{
+			document.getElementById('propHTML').value+=tmpSplit[curArray];
+			curArray++;
+			nuRuns=nuRuns-1;
+		}
+		changeProp();
+		return;
+}
+//----------------------------------------------------------------------------------------------------------
+//**********************************************************************************************************
+//---------------------------------------Get Selection For Format-------------------------------------------
+function getSel()
+ {
+	var txt = '';
+
+ 	if (window.getSelection){
+		txt = window.getSelection();
+		foundIn = 'window.getSelection()';
+	}
+	
+	else if (document.getSelection) 
+	{
+		txt = document.getSelection();
+		foundIn = 'document.getSelection()';
+	}
+	
+	else if (document.selection)
+	{
+		txt = document.selection.createRange().text;
+		foundIn = 'document.selection.createRange()';
+	}
+	else 
+		return;
+	alert(txt);
+	return;
+}
+//----------------------------------------------------------------------------------------------------------
+//**********************************************************************************************************
+//----------------------------------------Inport PluginWIP--------------------------------------------------
+function importPlugin()
+{
+	if(document.props.plug.value=='Continue')
+	{
+		document.props.plug.value='Plugin Wiz';
+		startPlugin(document.props.selected.value);
+	}
+	else
+	{
+		var pluginLoc=prompt('Please Enter the location of the plugin');
+		alert('You will need to press the plug in button one more time before continuing.');
+		if(pluginLoc==null||pluginLoc=='')
+			return;
+		loadContent(pluginLoc,'text/javascript',false);
+		document.props.plug.value='Continue';
+	}
+}
+//----------------------------------------------------------------------------------------------------------
+//**********************************************************************************************************
+//------------------------------------Pull Script for Plugin------------------------------------------------
+function loadContent(file,scriptType,CssFile)
+	{
+	if(!CssFile)
+	{
+  var head = document.getElementsByTagName('head').item(0)
+  var scriptTag = window.opener.document.getElementById('loadScript');
+  if(scriptTag) head.removeChild(scriptTag);
+  script = document.createElement('script');
+  script.src = file;
+	script.type = scriptType;
+	script.id = 'loadScript';
+	head.appendChild(script)
+	return;
+	}
+	else
+	{
+	  var head = document.getElementsByTagName('head').item(0)
+  var CssTag = window.opener.document.getElementById('loadCss');
+  if(CssTag) head.removeChild(scriptTag);
+  Css = document.createElement('Css');
+  Css.src = file;
+	Css.type =scriptType;
+	Css.id = 'loadCss';
+	head.appendChild(Css)
+	}
+}
+//----------------------------------------------------------------------------------------------------------
+//**********************************************************************************************************
+//-------------------------------------------Load A Page----------------------------------------------------
+function loadIt()
+{
+	if(confirm('If the file is on your computer press ok. If it\'s on the Web press Cancel'))
+		alert('Due to browser security \(A Very good thing\) Files may not be directly loaded from your computer directly. To load open your file in your browser then type "?edit" no "s AFTER the URL. Also the editing file MUST be on you computer also.');
+	else
+		var loadPage=prompt('Enter Web Location. Please Note:The Loaded page MUST be in the same domain and have the same protocol as the Editor.','http://');
+	if(loadPage==null||loadPage=='')
+		return;
+	window.opener.top.location.href=loadPage + '?edit';
+	close();
+}
+
+function addHr(widthHr)
+{
+if(widthHr==null||widthHr=='')
+	return;
+document.getElementById('propHTML').value+='<hr width="'+widthHr+'">'
+changeProp();
+}
+//----------------------------------------------------------------------------------------------------------
+//**********************************************************************************************************
+//-------------------------------------------Full Help-----------------------------------------------------
+
+function needHelp()
+{
+	if(helpMe==0)
+	{
+		if(!confirm('Show the Help\(it might take a while!\)?'))
+			return;
+		alert('This is a breif tutorial on my GUI or G(raphical) U(ser) I(nterface). First off I would like to thank you for using my program!');
+		alert('Heres a quick orientation: The top row is cell and body spacific changes. The bottom changes Stuff in the editing Box');
+		alert('The top buttons in order are:Start Gui//add table, save, load, Cell Text Size, Top align, Middle cell align, Base line align, cell left algin, cell mid align, cell right align, cell height, cekk width, table width, insert line, Dynamic Objects, cell background image, body background image, cell background color, body background color, table outline width, plugin wizard, page title, default view, toolbar view and finaly hide editor');
+		alert('Phew');
+		alert('The second row in order is: text formatting, font face, font size, undo, redo, make link, insert image, insert, table, bold, italic, underline, text color, text highlight, right align, center align, numbering, bullets, less indent, more indent, modify editing area, and lock page.');		
+		alert('WAKE UP! Now you need to first press "Start GUI". This will create your first table. For the rows and columns select 2 for all questions. Tables are the base of webpages created with my GUI. When you have done this press "Help" again.');
+		helpMe++;
+		return;
+	}
+	if(helpMe==1)
+	{
+		alert('Now that you have your first Cell created let\'s edit a cell. Click on the cell with "0_2_2". After your done press "Help" again.');
+		helpMe++;
+		return;
+	}
+	if(helpMe==2)
+	{
+		if(!window.opener.document.getElementById('TD0_2_2'))
+		{
+		alert('It Seems you have not presed "Start GUI". Please press that now');
+		helpMe=2;
+		return;
+		
+		}
+		alert('Now that a Cell is selected lets change a Cell Property');
+		alert('Click on top Center button. The text should move the the center of the cell. After your done press "Help" again.');
+		helpMe++;
+		return;
+	}
+	if(helpMe==3)
+	{
+		alert('Now Click on the text size button. It\'s the one with the small A and the large A, then change it to "25pt" and hit ok. It should get much larger After your done press "Help" again.');
+		helpMe++;
+		return;
+	}
+	if(helpMe==4)
+	{
+		alert('Now For active editing.');
+		alert('Click in the bottom portion where it says "0_2_2" in the editing bar. Then select it and press the Underlined A. Select any color but white or black. The Selected Text should change to that color in the lower box.  After your done press "Help" again.');
+		helpMe++;
+		return;
+	}
+	if(helpMe==5)
+	{
+		alert('Now press "Change Cell Content" You should notice that the code on the page your editing will reflect the changes you\'ve made. Also note the HTML appears in the text box on the right. After your done press "Help" again.');
+		helpMe++;
+		return;
+	}
+	if(helpMe==6)
+	{
+		alert('Now for page changes.');
+		alert('Click on the Cell Width button and change it to "10%" and the Height button and change that to 200 (no % sign) Then press Enter. The width button  has an arrow pointing left and right, and the height button has an arrow pointing up and down. The Box should decrease in width and increace in height. After your done press "Help" again.');
+		helpMe++;
+		return;
+	}
+	if(helpMe==7)
+	{
+		alert('Now click in the Document Title button(the one with the big T) and change it to "My Page" and press ok. Notice at the top of the page, the title changed. After your done press "Help" again.');
+		helpMe++;
+		return;
+	}
+	if(helpMe==8)
+	{
+		alert('Now Click in the Body BG color button(the one with the paint bucket in a box) type red and press enter. The color of the page should turn to red. Please note you may also use hex like #090909 ore rgb like rgb(9,9,9) After your done press "Help" again.');
+		helpMe++;
+		return;
+	}
+	if(helpMe==9)
+	{
+		alert('Now for Active Objects');
+		alert('Click on the Dynamic Object button. It\'s the one with the O surrounding a D. Then click on "Place Text, and type "Move me" in the box and press ok twice. You should see your new text appear. After your done press "Help" again."');
+		helpMe++;
+		return;
+	}	
+	if(helpMe==10)
+	{
+		alert('Click on the Dynamic Object button. It\'s the one with the O surrounding a D. Then click on "Place Text, and type "Move me" in the box and press ok twice. You should see your new text appear.  DON\'T CLOSE THE WINDOW WITH THE place text IN IT! After your done press "Help" again.');
+		helpMe++;
+		return;
+	}
+	if(helpMe==11)
+	{
+		alert('Now click on text you just created and move it around the screen. Then click again to set it where you want it. Note: You can move a dynamic object as long as the creator window is open. Just open it again to move it again.  After your done press "Help" again.');
+		helpMe++;
+		return;
+	}
+	if(helpMe==12)
+	{
+		prompt('Now click on "place Image" and put thr text in below this for the path. Then hit ok.  After your done press "Help" again.','http://www.theplaceforitall.com/portablefirefox/images/firefox-logo.jpg');
+		helpMe++;
+		return;
+	}
+	if(helpMe==13)
+	{
+		alert('Now click on image you just created and move it around the screen. Then click again to set it where you want it. Note: You can move a dynamic object as long as the creator window is open. Just open it again to move it again.  After your done press "Help" again.');
+		helpMe++;
+		return;
+	}
+	if(helpMe==14)
+	{
+		alert('now click in the "transparency" box, change it to 35 and press enter. the image should become Clear. (Won\'t work in Internet Explorer)  After your done press "Help" again.');
+		helpMe++;
+		return;
+	}
+	if(helpMe==15)
+	{
+		alert('Now for Saving and Loading(Fx only).');
+		alert('To save your page press File in the browsers toolbar and press save as and save it where you want it. After your done press "Help" again.');
+		helpMe++;
+		return;
+	}
+	if(helpMe==16)
+	{
+		alert('to Load (YOU CANNOT LOAD DIRECLY FROM YOU COMPUTER WITH THE LOAD OPTION) press the load page button it will either give you the option to load from the web, or instruct you on how to load from your hard drive After your done press "Help" again.');
+		helpMe++;
+		return;
+	}
+	if(helpMe==17)
+	{
+		alert('This Concludes My help, If you have any questions email me at c1a9r8d5@gmail.com. Thank you once again for using my software.');
+		helpMe=0;
+		return;
+	}
+return;
+}
+//---------------------------------------------------------------------------------------------------------
+//*********************************************************************************************************
+//-------------------------------------------EZ JavaScripts------------------------------------------------
+function addSomeScript()
+{
+	nameJSObjectsTop++;
+			if(navigator.appName!="Microsoft Internet Explorer")
+			{	
+			JSadd=window.open('','JavaScript','dependent=yes,fullscreen=yes,dialog=yes,alwaysRaised=yes, status=no, height=100, width=400,toolbar=0,scrollbars=1,resizable=0,left=310,top = 340')
+			}
+			else
+			{
+			JSadd=window.open('','JavaScript','Editor','height=100. width=400');
+			}
+	tmp=JSadd.document;
+	tmp.writeln('<script>');
+	tmp.writeln('var nameJSObjects='+nameJSObjectsTop+';');
+	tmp.writeln('function makeAnObject(type)');
+	tmp.writeln('{');
+		tmp.writeln('var addy=\'\';');
+		tmp.writeln('nameJSObjects++;');
+		tmp.writeln('if(type==\'button\')');
+		tmp.writeln('{');
+			tmp.writeln('addy = \'<input type="button" id="JSObject\'+nameJSObjects+\'" value="\';');
+			tmp.writeln('addy+=prompt(\'What should the buttons say?\',\'Button\');');
+			tmp.writeln('addy+=\'" \';');
+			tmp.writeln('var nuOfRep=prompt(\'How Many Actions?\',\'1\')');
+			tmp.writeln('while(nuOfRep>0)');
+			tmp.writeln('{');
+				tmp.writeln('addy+=prompt(\'What action, onClick,onFocus,onBlur,onChange,onMouseOver, onMouseOut\',\'onClick\');');
+				tmp.writeln('addy+=\'="javascript:\';');
+				tmp.writeln('addy+=prompt(\'What do you want the Button to do?\',\'Add Script here\');');
+				tmp.writeln('addy+=\'"\'');
+				tmp.writeln('nuOfRep--;');
+				tmp.writeln('}');
+				tmp.writeln('addy+=\'>\';');
+				tmp.writeln('alert(\'Created Object ID= JSObject\'+nameJSObjects)');
+		tmp.writeln('}');
+
+		tmp.writeln('if(type==\'picture\')');
+		tmp.writeln('{');
+			tmp.writeln('addy = \'<img alt="JS Object" id="JSObject\'+nameJSObjects+\'" src="\';');
+			tmp.writeln('addy+=prompt(\'Image Path?\',\'http://\');');
+			tmp.writeln('addy+=\'" \';');
+			tmp.writeln('var nuOfRep=prompt(\'How Many Actions?\',\'1\')');
+			tmp.writeln('while(nuOfRep>0)');
+			tmp.writeln('{');
+				tmp.writeln('addy+=prompt(\'What action, onClick,onMouseOver, onMouseOut\',\'onClick\');');
+				tmp.writeln('addy+=\'="javascript:\';');
+				tmp.writeln('addy+=prompt(\'What do you want the Picture to do?\',\'Add Script here\');');
+				tmp.writeln('addy+=\'"\'');
+				tmp.writeln('nuOfRep--;');
+				tmp.writeln('}');
+				tmp.writeln('addy+=\'>\';')
+				tmp.writeln('alert(\'Created Object ID= JSObject\'+nameJSObjects)');
+		tmp.writeln('}');
+		
+		tmp.writeln('if(type==\'textbox\')');
+		tmp.writeln('{');
+			tmp.writeln('addy = \'<input type="textbox" id="JSObject\'+nameJSObjects+\'" value="\';');
+			tmp.writeln('addy+=prompt(\'What should the textbox start with?\',\'\');');
+			tmp.writeln('addy+=\'" \';');
+			tmp.writeln('addy+=\'size="\';');
+			tmp.writeln('addy+=prompt(\'What size?\',\'6\');');
+			tmp.writeln('addy+=\'"\'');
+			tmp.writeln('var nuOfRep=prompt(\'How Many Actions?\',\'1\')');
+			tmp.writeln('while(nuOfRep>0)');
+			tmp.writeln('{');
+				tmp.writeln('addy+=prompt(\'What action, onClick,onFocus,onBlur,onChange,onMouseOver, onMouseOut\',\'onClick\');');
+				tmp.writeln('addy+=\'="javascript:\';');
+				tmp.writeln('addy+=prompt(\'What do you want the textbox to do?\',\'Add Script here\');');
+				tmp.writeln('addy+=\'"\'');
+				tmp.writeln('nuOfRep--;');
+				tmp.writeln('}');
+			tmp.writeln('addy+=\' \'');
+			tmp.writeln('addy+=\'>\';')
+			tmp.writeln('alert(\'Created Object ID= JSObject\'+nameJSObjects)');
+
+	tmp.writeln('}');
+	
+		tmp.writeln('if(type==\'text\')');
+		tmp.writeln('{');
+			tmp.writeln('addy = \'<span id="JSObject\'+nameJSObjects+\'" \';');
+			tmp.writeln('var nuOfRep=prompt(\'How Many Actions?\',\'1\')');
+			tmp.writeln('while(nuOfRep>0)');
+			tmp.writeln('{');
+				tmp.writeln('addy+=prompt(\'What action, onClick,onMouseOver, onMouseOut\',\'onClick\');');
+				tmp.writeln('addy+=\'="javascript:\';');
+				tmp.writeln('addy+=prompt(\'What do you want the Text to do?\',\'Add Script here\');');
+				tmp.writeln('addy+=\'"\'');
+				tmp.writeln('nuOfRep--;');
+				tmp.writeln('}');
+			tmp.writeln('addy+=\'>\';')
+			tmp.writeln('addy+=prompt(\'What Text?\',\'\');');
+			tmp.writeln('addy+=\'<\/span>\';');
+			tmp.writeln('alert(\'Created Object ID= JSObject\'+nameJSObjects)');
+		tmp.writeln('}');
+		
+		tmp.writeln('if(type==\'MOText\')');
+		tmp.writeln('{');
+			tmp.writeln('addy = \'<span id="JSObject\'+nameJSObjects+\'" \';');
+			tmp.writeln('var realTmp=prompt(\"\'What Starting color? MUST HAVE QUATES\'\",\"\'#000000\'\");');
+			tmp.writeln('addy+=\'<span onMouseOver="javascript:this.style.color=\'+realTmp+\'" onMouseOut="javascript:this.style.color=\'');
+			tmp.writeln('addy+=prompt(\"\'What color when the mouse is over? MUST HAVE QUATES\'\",\"\'#AAAAAA\'\");');
+			tmp.writeln('addy+=\'">\'');//style="Color=\'+ realTmp +\'"
+			tmp.writeln('addy+=prompt(\'What Text?\',\'\');');
+			tmp.writeln('alert(\'Please make sure that you move the mouse over your new text once before saving.\');');
+			tmp.writeln('addy+=\'<\/span>\';');
+			tmp.writeln('alert(\'Created Object ID= JSObject\'+nameJSObjects)');
+		tmp.writeln('}');
+
+	tmp.writeln('window.opener.document.getElementById(\'propHTML\').value+=addy;');
+	tmp.writeln('window.opener.changeProp();');
+	tmp.writeln('window.close();');
+	tmp.writeln('}');
+	tmp.writeln('<\/script>');
+	tmp.writeln('<div align="center"> What do you want to add?<BR>');
+	tmp.writeln('<input type="button" value="Button" onClick="makeAnObject(\'button\')"> ');
+	tmp.writeln('<input type="button" value="Picture" onClick="makeAnObject(\'picture\')"> ');
+	tmp.writeln('<input type="button" value="TextBox" onClick="makeAnObject(\'textbox\')"> ');
+	tmp.writeln('<input type="button" value="Text" onClick="makeAnObject(\'text\')"> ');
+	tmp.writeln('<input type="button" value="Mouse Over Effect Text" onClick="makeAnObject(\'MOText\')"> ');
+
+	tmp.writeln('</div>');
+	tmp.close();
+}
+
+//----------------------------------------------------------------------------------------------------------
+//**********************************************************************************************************
+//------------------------------------------Open Edit Page(replaced)---------------------------------------
+
+function launchRich()
+{
+	var richText=window.open('richEdit.htm','Slide Show','dependent=yes,fullscreen=yes,dialog=yes,alwaysRaised=yes, status=no, height=100, width=1200,toolbar=0,scrollbars=1,resizable=0,top = 800');
+}
+//----------------------------------------------------------------------------------------------------------
+//**********************************************************************************************************
+//------------------------------Edit IFrame For cell code THANK YOU MOZILLA.ORG!!!-------------------------
+var command = "";
+
+function InitToolbarButtons() {
+  var kids = document.getElementsByTagName('DIV');
+
+  for (var i=0; i < kids.length; i++) {
+    if (kids[i].className == "imagebutton") {
+      kids[i].onmouseover = tbmouseover;
+      kids[i].onmouseout = tbmouseout;
+      kids[i].onmousedown = tbmousedown;
+      kids[i].onmouseup = tbmouseup;
+      kids[i].onclick = tbclick;
+    }
+  }
+}
+
+function tbmousedown(e)
+{
+  this.firstChild.style.left = 2;
+  this.firstChild.style.top = 2;
+  this.style.border="inset 2px";
+  e.preventDefault();
+}
+
+function tbmouseup()
+{
+  this.firstChild.style.left = 1;
+  this.firstChild.style.top = 1;
+  this.style.border="outset 2px";
+}
+
+function tbmouseout()
+{
+  this.style.border="solid 2px #C0C0C0";
+}
+
+function tbmouseover()
+{
+  this.style.border="outset 2px";
+}
+
+  function insertNodeAtSelection(win, insertNode)
+  {
+      // get current selection
+      var sel = win.getSelection();
+
+      // get the first range of the selection
+      // (there's almost always only one range)
+      var range = sel.getRangeAt(0);
+
+      // deselect everything
+      sel.removeAllRanges();
+
+      // remove content of current selection from document
+      range.deleteContents();
+
+      // get location of current selection
+      var container = range.startContainer;
+      var pos = range.startOffset;
+
+      // make a new range for the new selection
+      range=document.createRange();
+
+      if (container.nodeType==3 && insertNode.nodeType==3) {
+
+        // if we insert text in a textnode, do optimized insertion
+        container.insertData(pos, insertNode.nodeValue);
+
+        // put cursor after inserted text
+        range.setEnd(container, pos+insertNode.length);
+        range.setStart(container, pos+insertNode.length);
+
+      } else {
+
+
+        var afterNode;
+        if (container.nodeType==3) {
+
+          // when inserting into a textnode
+          // we create 2 new textnodes
+          // and put the insertNode in between
+
+          var textNode = container;
+          container = textNode.parentNode;
+          var text = textNode.nodeValue;
+
+          // text before the split
+          var textBefore = text.substr(0,pos);
+          // text after the split
+          var textAfter = text.substr(pos);
+
+          var beforeNode = document.createTextNode(textBefore);
+          afterNode = document.createTextNode(textAfter);
+
+          // insert the 3 new nodes before the old one
+          container.insertBefore(afterNode, textNode);
+          container.insertBefore(insertNode, afterNode);
+          container.insertBefore(beforeNode, insertNode);
+
+          // remove the old node
+          container.removeChild(textNode);
+
+        } else {
+
+          // else simply insert the node
+          afterNode = container.childNodes[pos];
+          container.insertBefore(insertNode, afterNode);
+        }
+
+        range.setEnd(afterNode, 0);
+        range.setStart(afterNode, 0);
+      }
+
+      sel.addRange(range);
+  };
+
+function getOffsetTop(elm) {
+
+  var mOffsetTop = elm.offsetTop;
+  var mOffsetParent = elm.offsetParent;
+
+  while(mOffsetParent){
+    mOffsetTop += mOffsetParent.offsetTop;
+    mOffsetParent = mOffsetParent.offsetParent;
+  }
+ 
+  return mOffsetTop;
+}
+
+function getOffsetLeft(elm) {
+
+  var mOffsetLeft = elm.offsetLeft;
+  var mOffsetParent = elm.offsetParent;
+
+  while(mOffsetParent){
+    mOffsetLeft += mOffsetParent.offsetLeft;
+    mOffsetParent = mOffsetParent.offsetParent;
+  }
+ 
+  return mOffsetLeft;
+}
+
+function tbclick()
+{
+  if ((this.id == "forecolor") || (this.id == "hilitecolor")) {
+    parent.command = this.id;
+    buttonElement = document.getElementById(this.id);
+    document.getElementById("colorpalette").style.left = getOffsetLeft(buttonElement);
+    document.getElementById("colorpalette").style.top = getOffsetTop(buttonElement) + buttonElement.offsetHeight;
+    document.getElementById("colorpalette").style.visibility="visible";
+  } else if (this.id == "createlink") {
+    var szURL = prompt("Enter a URL:", "http://");
+    if ((szURL != null) && (szURL != "")) {
+      document.getElementById('edit').contentWindow.document.execCommand("CreateLink",false,szURL);
+    }
+  } else if (this.id == "createimage") {
+    imagePath = prompt('Enter Image URL:', 'http://');
+    if ((imagePath != null) && (imagePath != "")) {
+      document.getElementById('edit').contentWindow.document.execCommand('InsertImage', false, imagePath).setAttribute('alt','Image');
+    }
+  } else if (this.id == "createtable") {
+    e = document.getElementById("edit");
+    rowstext = prompt("enter rows");
+    colstext = prompt("enter cols");
+    rows = parseInt(rowstext);
+    cols = parseInt(colstext);
+    if ((rows > 0) && (cols > 0)) {
+      table = e.contentWindow.document.createElement("table");
+      table.setAttribute("border", "1");
+      table.setAttribute("cellpadding", "2");
+      table.setAttribute("cellspacing", "2");
+      tbody = e.contentWindow.document.createElement("tbody");
+      for (var i=0; i < rows; i++) {
+        tr =e.contentWindow.document.createElement("tr");
+        for (var j=0; j < cols; j++) {
+          td =e.contentWindow.document.createElement("td");
+          br =e.contentWindow.document.createElement("br");
+          td.appendChild(br);
+          tr.appendChild(td);
+        }
+        tbody.appendChild(tr);
+      }
+      table.appendChild(tbody);      
+      insertNodeAtSelection(e.contentWindow, table);
+    }
+  } else {
+    document.getElementById('edit').contentWindow.document.execCommand(this.id, false, null);
+  }
+}
+function Select(selectname)
+{
+  var cursel = document.getElementById(selectname).selectedIndex;
+  /* First one is always a label */
+  if (cursel != 0) {
+    var selected = document.getElementById(selectname).options[cursel].value;
+    document.getElementById('edit').contentWindow.document.execCommand(selectname, false, selected);
+    document.getElementById(selectname).selectedIndex = 0;
+  }
+  document.getElementById("edit").contentWindow.focus();
+}
+
+function dismisscolorpalette()
+{
+  document.getElementById("colorpalette").style.visibility="hidden";
+}
+function Start() {
+  document.getElementById('edit').contentWindow.document.designMode = "on";
+  try {
+    document.getElementById('edit').contentWindow.document.execCommand("undo", false, null);
+  }  catch (e) {
+    alert("This is not supported on your Browser.");
+  }
+  InitToolbarButtons();
+  document.addEventListener("mousedown", dismisscolorpalette, true);
+  document.getElementById("edit").contentWindow.document.addEventListener("mousedown", dismisscolorpalette, true);
+  document.addEventListener("keypress", dismisscolorpalette, true);
+  document.getElementById("edit").contentWindow.document.addEventListener("keypress", dismisscolorpalette, true);
+}
+//#####################################################################################################################
+//-->
+//-------------------------------------------------------------------------------------------------------
+//********************************************************************************************************
+//------------------------------------------Debug Window-------------------------------------------------
+function launchDebugWindow()
+{
+
+	testImageMove=false;
+				if(navigator.appName!="Microsoft Internet Explorer")
+			{	
+	debugW=window.open('','ImageMaker','dependent=yes,fullscreen=no,dialog=yes,alwaysRaised=yes, status=no, height=145, width=400,toolbar=0,scrollbars=1,resizable=0,left=310,top = 340')
+			}
+			else
+			{
+	debugW=window.open('','ImageMaker','height=165, width=400, toolbar=0')
+			}
+	
+	tmp2=debugW.document;	
+	tmp2.writeln('<strong>X Cord:</strong><input type="text" id="debugX" disabled>&nbsp;&nbsp; While this is open<BR>');
+	tmp2.writeln('<strong>Y Cord:</strong><input type="text" id="debugY" disabled> &nbsp;&nbsp;you may move<BR>');
+	tmp2.writeln('<strong>ID:</strong><input type="text" id="imageId" disabled> &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; any image <BR>');
+	tmp2.writeln('<input type="button" value="Place Image" onclick=window.opener.runTestImage(\'image\');> <input type="button" value="Place Text" onclick=window.opener.runTestImage(\'text\');>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp; made by this.');
+	tmp2.writeln('Transperancy 0-100%:<input type="text" value="" id="transLevel" onChange="window.opener.changeTrans(this.value);" onfocus="this.value=window.opener.opener.document.getElementById(document.getElementById(\'imageId\').value).style.opacity*100"><BR>');
+	tmp2.writeln('Image Path:<input type="text" value="" id="imagePathDy" onChange="window.opener.opener.document.getElementById(document.getElementById(\'imageId\').value).src=this.value" onfocus="this.value=window.opener.opener.document.getElementById(document.getElementById(\'imageId\').value).src"><BR>');
+
+	/*tmp2.writeln('<\script>');
+	tmp2.writeln('addy+=\'<img src="\'+prompt(\'What image Path?\',\'\')+\'" id="testImage" onmousedown="moveImageTest(\'testImage\');" onmouseup="disableMove();"\';'); addy+=\'<img src="\'+prompt(\'What image Path?\',\'\')+\'" id="testImage" onmousedown="moveImageTest(\'testImage\');" onmouseup="disableMove();"';
+	tmp2.writeln('window.opener.document.getElementById(\'propHTML\').value+=addy;');
+	tmp2.writeln('window.opener.changeProp();');
+	tmp2.writeln('window.close();');
+	tmp2.writeln('<\/script>');*/
+
+}
+function toggleDynamic()
+{
+if(isDynamic=='')
+	isDynamic='style="position:absolute"';
+else
+	isDynamic='';
+}
+function changeTrans(opacityValue)
+{
+opacityValue /=100;
+	if(document.all)
+	{
+		window.opener.document.getElementById(imageid).style.filter="alpha(opacity="+opacityValue+")";
+		window.opener.document.getElementById(imageid).style.filter="alpha(opacity="+opacityValue+")";
+	}
+	else
+	{
+		window.opener.document.getElementById(imageid).style.opacity=opacityValue;
+		window.opener.document.getElementById(imageid).style.opacity=opacityValue;
+	}
+
+}
+function promptChange(tmpCheck)
+{
+if(tmpCheck=='MBGC')
+{
+document.getElementById('propBBG').value=prompt('Put new color name for the body here. You may also use hex values so long as you put \'#\' before.',document.getElementById('propBBG').value);
+}
+if(tmpCheck=='CBGI')
+{
+document.getElementById('CBGI').value=prompt('Put Image Path Here. It must be located on the internet.',document.getElementById('CBGI').value);
+}
+if(tmpCheck=='BBGI')
+{
+if(confirm('Ok for a fixed background (Like Xanga pages)'))
+	window.opener.document.body.style.backgroundAttachment="fixed";
+else
+	window.opener.document.body.style.backgroundAttachment="scroll";
+if(!confirm('Would you like it to repeat?'))
+	window.opener.document.body.style.backgroundRepeat= "no-repeat";
+else
+	window.opener.document.body.style.backgroundRepeat= "repeat";
+	
+	window.opener.document.body.style.backgroundImage='url('+prompt('Where is your Image?','http://')+')';
+}
+if(tmpCheck=='CH')
+{
+document.getElementById('cellH').value=prompt('Enter new cell height',document.getElementById('cellH').value);
+}
+if(tmpCheck=='CW')
+{
+document.getElementById('cellW').value=prompt('Enter new cell width',document.getElementById('cellW').value);
+}
+if
+(tmpCheck=='CBG')
+{
+document.getElementById('cellBGC').value=prompt('Put new color name for your cell here. You may also use hex values so long as you put \'#\' before.',document.getElementById('BGC').value);
+
+}
+if(tmpCheck=='TC')
+{
+document.getElementById('titleChange').value=prompt('Enter new document title.',document.getElementById('titleChange').value);
+}
+if(tmpCheck=='TW')
+{
+document.getElementById('tableWidth').value=prompt('Enter new table width.',document.getElementById('tableWidth').value);
+}
+if(tmpCheck=='TB')
+{
+document.getElementById('tableBorder').value=prompt('Enter new table border width.',document.getElementById('tableBorder').value);
+}
+if(tmpCheck=='TS')
+{
+document.getElementById('textSizeCell').value=prompt('Text size in points. Like \"12pt\"',document.getElementById('textSizeCell').value);
+}
+changeProp('','','','','');
+}
+</SCRIPT>
+</head>
+<span id="hideIt" >
+<body bgcolor="#C0C0C0" onload="Start()" id="mainBody" lang="en" topmargin="0" leftmargin="0" onbeforeunload="return 'You are closing your editing session. Please remember to save your document.'" onKeyPress="checkKeycode(event)">
+<form name="props">
+
+ <input type="hidden" value="-" onClick="vAlign('-');" class="cellBar"><input type="hidden" value="+" onClick="vAlign('+');" class="cellBar"><input type="hidden" value="12pt"  id="textSizeCell" name="propFS" class="cellBarT" size="2" onChange="changeProp('','','','','',document.props.tpropWidth.value);"/>
+ <table>
+ <tr>
+ <td>
+  <input type="button" value="Start Gui" onClick="runIt();" id="startIt" class="startBar"/>
+   <span style="cursor:help" onClick="alert(hselect)" class="mainText">Selected Cell:</span><input type="text" class="cellBarT"  value="0_0" size="3" name="selected" disabled>
+  <input type="hidden" value="Select None" onClick="unSelect();" class="cellBar"/>
+
+  <!--<input type="button" value="Preview" onClick="previewIt();" class="cellBar"/>-->
+
+ <!--DON'T NEED THIS ANYMORE <input type="button" value="Make a Link" onClick="linkMake();" class="cellBar"/>-->
+</td>
+ 
+
+ <!-- <input type="button" value="Top" onClick="vAlign('top');" class="cellBar"><input type="button" value="Middle" onClick="vAlign('mid');" class="cellBar"><input type="button" value="Bottom" onClick="vAlign('bot');" class="cellBar">-->
+ <!-- <input type="button" value="Left" onClick="vAlign('left');" class="cellBar"><input type="button" value="Center" onClick="vAlign('center');" class="cellBar"><input type="button" value="Right" onClick="vAlign('right');" class="cellBar">-->
+      <td width="22" height="10"><div style="left: 70px;" class="imagebutton"><img class="image" onClick="javascript:alert(saveIt);" src="save.jpg" alt="Save" title="Save"></div></td>
+      <td width="22" height="10"><div style="left: 70px;" class="imagebutton"><img class="image" onClick="loadIt();" src="load.jpg" alt="Open" title="Open"></div></td>
+	  <td>|</td>
+      <td width="22" height="10"><div style="left: 70px;" class="imagebutton"><img class="image" onClick="promptChange('TS');" src="textsize.jpg" alt="Cell Text Size" title="Cell Text Size"></div></td>
+      <td width="22"  height="10"><div class="imagebutton"><img class="image" src="top.jpg" width=22 onClick="vAlign('top');" alt="Align Cell Contents Top" title="Align Cell Contents Top"></div></td><td width="20"  height="10"><div class="imagebutton" ><img class="image" onClick="vAlign('mid');" src="Mid.jpg" width="20" alt="Align Cell Contents Middle" title="Align Cell Contents Middle"></div></td><td width="22"  height="10"><div class="imagebutton"><img class="image" onClick="vAlign('bot');" src="Bot.jpg" width="20" alt="Bottom Align" title="Align Cell Contents Bottom"></div></td>
+
+      <td width="22"  height="10"><div class="imagebutton"><img class="image" onClick="vAlign('left');" src="justifyleft.gif" alt="Align Cell Contents Left" title="Align Cell Contents Left"></div></td>
+      <td width="22" height="10"><div class="imagebutton"><img class="image" onClick="vAlign('center');" src="justifycenter.gif" alt="Align Cell Contents Center" title="Align Cell Contents Center"></div></td>
+      <td width="22" height="10"><div class="imagebutton"><img class="image" onClick="vAlign('right');" src="justifyright.gif" alt="Align Cell Contents Right" title="Align Cell Contents Right"></div></td>
+	  <td>|</td>
+      <td width="22" height="10"><div style="left: 70px;" class="imagebutton"><img class="image" onClick="promptChange('CH');" src="height.jpg" alt="Cell Height" title="Cell Height"></div></td>
+      <td width="22" height="10"><div style="left: 70px;" class="imagebutton"><img class="image" onClick="promptChange('CW');" src="width.jpg" alt="Cell Width" title="Cell Width"></div></td>
+      <td width="22" height="10"><div style="left: 70px;" class="imagebutton"><img class="image" onClick="promptChange('TW');" src="tablewidth.jpg" alt="Table Width" title="Table Width"></div></td>
+	  <td>|</td>
+
+      <td width="22" height="10"><div class="imagebutton"><img class="image" onClick="addHr(prompt('How long?','100%'))" src="hr.jpg" alt="Horizontal Rule" title="Horizontal Rule"></div></td>
+	  <td width="22" height="10"><div class="imagebutton"><img class="image" src="dynamicObjects.jpg" alt="Insert Object" title="Insert Object" onClick="launchDebugWindow();"></div></td>
+      <td width="22" height="10"><div style="left: 70px;" class="imagebutton"><img class="image" onClick="promptChange('CBGI');" src="imageI.jpg" alt="Cell Background Image" title="Cell Background Image"></div></td>
+      <td width="22" height="10"><div style="left: 70px;" class="imagebutton"><img class="image" onClick="promptChange('BBGI');" src="bodybgimg.jpg" alt="Body Background Image" title="Body Background Image"></div></td>
+      <td width="22" height="10"><div style="left: 70px;" class="imagebutton"><img class="image" onClick="promptChange('CBG');" src="cellbg.jpg" alt="Cell Background Color" title="Cell Background Color"></div></td>
+      <td width="22" height="10"><div style="left: 70px;" class="imagebutton"><img class="image" onClick="promptChange('MBGC');" src="bgcmain.jpg" alt="Main Background Color" title="Main Background Color"></div></td>
+      <td width="22" height="10"><div class="imagebutton"><img class="image" onClick="promptChange('TB');" src="tableborder.jpg" alt="Table Border" title="Table Border"></div></td>
+	  <td>|</td>
+
+      <td width="22" height="10"><div class="imagebutton"><img class="image" onClick="importPlugin();" src="piwiz.jpg" alt="Plugin Wizard" title="Plugin Wizard"></div></td>
+      <td width="22" height="10"><div class="imagebutton"><img class="image" onClick="promptChange('TC');" src="title.jpg" alt="Change Title" title="Change Title"></div></td>
+<td>| Views:</td>
+      <td width="22" height="10"><div style="left: 70px;" class="imagebutton"><img class="image" onClick="setScreenProps(0,1000,1190,230);" src="dalign.jpg" alt="Normal View" title="Normal View"></div></td>
+      <td width="22" height="10"><div style="left: 70px;" class="imagebutton"><img class="image" onClick="setScreenProps(0,0,1190,100);" src="talign.jpg" alt="Top Toolbar View" title="Top Toolbar View"></div></td>
+      <td width="22" height="10"><div style="left: 70px;" class="imagebutton"><img class="image" onClick="minEdit(false);" src="halign.jpg" alt="Hide Editor" title="Hide Editor"></div></td>
+
+
+  <input type="hidden" value="Plugin Wiz" name="plug" class="cellBar" onClick="importPlugin();">
+</td>
+
+<td align="right">
+  <span style="cursor:help" onClick="alert(hDT)" class="mainText"></span><input type="hidden" class="cellBarT" id="titleChange"  name="propDT" size="6"  onFocus="javascript:this.focus();this.select();" onChange="changeProp('','','',document.props.propBorder.value,'');"/>
+  <span style="cursor:help" onClick="alert(hBBG)" class="mainText"></span><input type="hidden" class="cellBarT" id="propBBG" size="6" value="" name="propBBG" onFocus="javascript:this.focus();this.select();" onChange="changeProp('','',document.props.propBG.value,'','');"/>
+  <span style="cursor:help" onClick="alert(hlock)" class="mainText"></span><input type="hidden" id="pageLock" value="false" name="onTop" onClick="unSelect();"/>
+</td>
+
+ </tr>
+  </table>
+ 
+  <span style="cursor:help" onClick="alert(hCwidth)" class="mainText"></span><input type="hidden" class="cellBarT" id="cellW"  value="0"  name="propWidth" size="2" onFocus="javascript:this.focus();this.select();" onChange="changeProp('',document.props.propWidth.value,'','','');"/>
+  <span style="cursor:help" onClick="alert(hCheight)" class="mainText"></span><input type="hidden" class="cellBarT" id="cellH"  value="0" name="propHeight" size="2" onFocus="javascript:this.focus();this.select();" onChange="changeProp(document.props.propHeight.value,'','','','');"/>
+
+  <!--No Longer NeededText Color:--><input type="hidden" size="6" value="" name="propTC"  onFocus="javascript:this.focus();this.select();" onChange="changeProp('','',document.props.propBG.value,'','');"/>
+  <span style="cursor:help" onClick="alert(hCcolor)" class="mainText"></span><input type="hidden" id="cellBGC" class="cellBarT"  size="6" value="" name="propBGC" onFocus="javascript:this.focus();this.select();" onChange="changeProp('','',document.props.propBG.value,'','');"/>
+  <span style="cursor:help" onClick="alert(hCBG)" class="mainText"></span><input type="hidden" class="cellBarT" id="CBGI"  value="" name="propBG" onFocus="javascript:this.focus();this.select();" onChange="changeProp('','',document.props.propBG.value,'','');"/>
+ 
+  <span style="cursor:help" onClick="alert(hCTwidth)" class="mainText"></span><input type="hidden" class="cellBarT" id="tableWidth"  value="0"  name="tpropWidth" size="2" onFocus="javascript:this.focus();this.select();" onChange="changeProp('','','','','',document.props.tpropWidth.value);"/>
+  <input type="hidden"  value="0" name="tpropHeight" size="2" onFocus="javascript:this.focus();this.select();" onChange="changeProp('','','','','','',document.props.tpropHeight.value);"/>
+  <span style="cursor:help" onClick="alert(hBorder)" class="mainText"></span><input type="hidden" id="tableBorder" class="cellBarT"  value="0" name="propBorder" size="2" onFocus="javascript:this.focus();this.select();" onChange="changeProp('','','',document.props.propBorder.value,'');"/>
+  <div id="plugInAdd"></div>
+</form>
+
+<table id="toolbar1" bgcolor="#c0c0c0" border="0">
+
+  <tbody>
+    <tr>
+      <td><select id="formatblock" onchange="Select(this.id);">
+          <option value="&lt;p&gt;">Normal</option>
+          <option value="&lt;p&gt;">Paragraph</option>
+          <option value="&lt;h1&gt;">Heading 1 </option>
+          <option value="&lt;h2&gt;">Heading 2 </option>
+
+          <option value="&lt;h3&gt;">Heading 3 </option>
+          <option value="&lt;h4&gt;">Heading 4 </option>
+          <option value="&lt;h5&gt;">Heading 5 </option>
+          <option value="&lt;h6&gt;">Heading 6 </option>
+          <option value="&lt;address&gt;">Address </option>
+          <option value="&lt;pre&gt;">Formatted </option>
+
+        </select>
+      </td>
+      <td><select id="fontname" onchange="Select(this.id);">
+          <option value="Font">Font</option>
+          <option value="Arial">Arial</option>
+          <option value="Courier">Courier</option>
+          <option value="Times New Roman">Times New Roman</option>
+
+        </select>
+      </td>
+      <td><select unselectable="on" id="fontsize" onchange="Select(this.id);">
+          <option value="Size">Size</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+        </select>
+      </td>
+      <!--NOT COMPATABLE
+<td>
+<div class="imagebutton" id="cut"><img class="image" src="cut.gif" alt="Cut(disabled)" title="Cut"></div>
+</td>
+<td>
+<div class="imagebutton" id="copy"><img class="image" src="copy.gif" alt="Copy(disabled)" title="Copy"></div>
+</td>
+<td>
+<div class="imagebutton" id="paste"><img class="image" src="paste.gif" alt="Paste(disabled)" title="Paste"></div>
+</td>-->
+
+      <td><div class="imagebutton" id="undo"><img class="image" src="undo.gif" alt="Undo" title="Undo"></div></td>
+      <td><div class="imagebutton" id="redo"><img class="image" src="redo.gif" alt="Redo" title="Redo"></div></td>
+      <td><div style="left: 10px;" class="imagebutton" id="createlink"><img class="image" src="link.gif" alt="Insert Link" title="Insert Link"></div></td>
+      <td><div style="left: 10px;" class="imagebutton" id="createimage"><img class="image" src="image.gif" alt="Insert Image" title="Insert Image"></div></td>
+      <td><div style="left: 10px;" class="imagebutton" id="createtable"><img class="image" src="table.gif" alt="Insert Table" title="Insert Table"></div></td>
+      <td><div style="border: 2px solid rgb(192, 192, 192);" class="imagebutton" id="bold"><img class="image" src="bold.gif" alt="Bold" title="Bold"></div></td>
+      <td><div class="imagebutton" id="italic"><img class="image" src="italic.gif" alt="Italic" title="Italic"></div></td>
+      <td><div class="imagebutton" id="underline"><img class="image" src="underline.gif" alt="Underline" title="Underline"></div></td>
+      <td><a href="#end"><div style="left: 10px;" class="imagebutton" id="forecolor"><img class="image" src="forecolor.gif" alt="Text Color" title="Text Color"></a></div></td>
+
+      <td><a href="#end"><div style="left: 40px;" class="imagebutton" id="hilitecolor"><img class="image" src="backcolor.gif" alt="Background Color" title="Background Color"></a></div></td>
+      <td><div style="left: 10px;" class="imagebutton" id="justifyleft"><img class="image" src="justifyleft.gif" alt="Align Left" title="Align Left"></div></td>
+      <td><div style="left: 40px;" class="imagebutton" id="justifycenter"><img class="image" src="justifycenter.gif" alt="Center" title="Center"></div></td>
+      <td><div style="left: 70px;" class="imagebutton" id="justifyright"><img class="image" src="justifyright.gif" alt="Align Right" title="Align Right"></div></td>
+      <td><div style="left: 10px;" class="imagebutton" id="insertorderedlist"><img class="image" src="orderedlist.gif" alt="Ordered List" title="Ordered List"></div></td>
+      <td><div style="left: 40px;" class="imagebutton" id="insertunorderedlist"><img class="image" src="unorderedlist.gif" alt="Unordered List" title="Unordered List"></div></td>
+      <td><div style="left: 10px;" class="imagebutton" id="outdent"><img class="image" src="outdent.gif" alt="Outdent" title="Outdent"></div></td>
+      <td><div style="left: 40px;" class="imagebutton" id="indent"><img class="image" src="indent.gif" alt="Indent" title="Indent"></div></td>
+	  <td> &nbsp; <span style="cursor:help" onClick="alert(hEH)" class="mainText">Edit Height:</span><input type="text" class="cellBarT"   value="80" name="propIHeight" id="propIHeight" size="2" onFocus="javascript:this.focus();this.select();" onChange="changeProp();"/>
+
+	  	  <td width="22" height="10"><div style="left: 70px;" class="imagebutton"><img class="image" onClick="javascript:if(confirm('This page will now lock. To unlock press cancel.')){document.getElementById('pageLock').value='true';}else{document.getElementById('pageLock').value='false';}" src="lock.jpg" alt="Lock" title="Lock"></div></td>
+
+</td>
+    </tr>
+  </tbody>
+</table>
+<table  width="100%">
+	<tr>
+		<td id="frameBack" width="100%">
+			<iframe id="edit" height="80" width="80%"></iframe>  <span style="cursor:help" onClick="alert(hcode)"></span><textarea rows="5" wrap="hard" id="propHTML" class="editBar2" name="propHTML" onChange="changeProp('','','','',document.getElementById('propHTML').value);"/></textarea>
+
+		</td>
+	</tr>
+</table>
+
+<a name="end"></a><iframe id="colorpalette" name="end" src="colors.htm" style="visibility: hidden; position: absolute;" height="170" width="250"></iframe>
+<script type="text/javascript">
+function viewsource(source)
+{
+  var html;
+  if (source) {
+	document.getElementById('propHTML').value=document.getElementById('edit').contentWindow.document.body.innerHTML;
+
+    html = document.createTextNode(document.getElementById('edit').contentWindow.document.body.innerHTML);
+    document.getElementById('edit').contentWindow.document.body.innerHTML = "";
+    document.getElementById('edit').contentWindow.document.body.innerHTML=html;
+	changeProp();
+	viewsource(false);
+
+	  
+  } else {
+    html = document.getElementById('edit').contentWindow.document.body.ownerDocument.createRange();
+    html.selectNodeContents(document.getElementById('edit').contentWindow.document.body);
+    document.getElementById('edit').contentWindow.document.body.innerHTML = html.toString();
+    document.getElementById('edit').contentWindow.document.body.innerHTML = document.getElementById('propHTML').value;
+
+//    document.getElementById("toolbar1").style.visibility="visible";
+//    document.getElementById("toolbar2").style.visibility="visible";  
+  }
+}
+
+function usecss(source)
+{
+  document.getElementById('edit').contentWindow.document.execCommand("useCSS", false, !(source));  
+}
+
+function readonly(source)
+{
+    document.getElementById('edit').contentWindow.document.execCommand("readonly", false, !(source));  
+}
+function minEdit(isIt)
+{
+	if(isIt==false)
+	{
+		resizeTo(50,50);
+		if(showMinAlert)
+		{
+			alert('press ` to Return to full edit');
+			showMinAlert=false;
+		}
+		
+		//document.getElementById('hideIt').style.display='none';
+	}
+	else
+	{
+		resizeTo(1190,260);
+		//document.getElementById('hideIt').style.display='block';
+
+	}	
+	
+}
+function makeSmaller()
+{
+	if(large)
+	{
+		resizeTo(1190,260);
+		large=false;
+	}
+	else
+	{
+		resizeTo(1190,130);
+		large=true;
+	}
+}
+function setScreenProps(SXLoc,SYLoc,SWidth,SHeight)
+{
+	resizeTo(SWidth,SHeight);
+	moveTo(SXLoc,SYLoc);
+}
+function hideTestStuff()
+{
+if(document.getElementById('testStuff').style.visibility=='hidden')
+	{
+	alert('The following item\'s have not been 100% tested and are still in progress, they seem to mostly work, but they may cause errors, use at your own risk to your web page.');
+	document.getElementById('testStuff').style.visibility='visible';
+	}
+else
+	{
+	document.getElementById('testStuff').style.visibility='hidden';
+	}
+}
+</script>
+<input type="button" class="cellBar" value="Change Cell Content" onclick="viewsource(true);"> | 
+<!--<input  onclick="minEdit(this.checked)" type="checkbox">-->
+<!--<input type="button" class="cellBar" value="Make Content Smaller/Larger" onClick="makeSmaller()">-->
+<input type="hidden" value="Hide Content" class="cellBar" onClick="minEdit(false);">
+<a href="#"><input type="hidden" class="cellBar" value="ToolBar Align" onClick="setScreenProps(0,0,1190,130)">
+<input type="hidden" class="cellBar" value="Defult Align" onClick="setScreenProps(0,1000,1190,260)"></a>
+
+ <input type="hidden" class="cellBar" value="FullScreen" onClick="alert(fullScreenI);"/>
+  <input type="hidden" class="cellBar" value="Save" onClick="alert(saveIt);"/>
+  <input type="hidden"  class="cellBar" value="Load" onClick="loadIt();"/> 
+  <span style="cursor:help" onClick="needHelp();" class="mainText"><strong><u>Help</u></strong></span> &nbsp;<span onclick="hideTestStuff();" style="cursor:pointer;">&nbsp;&nbsp;&nbsp;<em>Show/Hide Extras:</em></span>
+<span id="testStuff" style="visibility:hidden;"><input type="button" class="cellBar" value="" style="background-color:#000000;height:1px; width:2px;" size="1" onClick="alert(hehe);"/>
+<input type="button" class="cellBar" value="Add Javascript" onClick="addSomeScript();">
+<input type="hidden" class="cellBar" value="Edit Dynamic Objects" onClick="launchDebugWindow();">  
+<span style="cursor:help" onClick="alert(dynamich)" class="mainText">Dynamic Cells?</span><input type="checkbox"  name="onTop" onClick="toggleDynamic();"/></span>
+
+<BR>
+
+<div style="visibility:hidden">
+  <span style="cursor:help" onClick="alert(OCE)">OnClick Effect:</span><input type="text" class="cellBarT"  value="" name="propOCE" onFocus="javascript:this.focus();this.select();" onChange="changeProp();"/>
+  <span style="cursor:help" onClick="alert(OMO)">OnMouseOver Effect:</span><input type="text"  class="cellBarT"  value="" name="propOMO" onFocus="javascript:this.focus();this.select();" onChange="changeProp();"/>
+  <span style="cursor:help" onClick="alert(OMOu)">OnMouseOut Effect:</span><input type="text" class="cellBarT"  value="" name="propOMOu" onFocus="javascript:this.focus();this.select();" onChange="changeProp();"/>
+
+</div>
+<!--<input type="button" onClick="changeProp('yes');"/>-->
+<!--View HTML Source
+<input checked="checked" onclick="usecss(this.checked)" type="checkbox">
+Use CSS
+<input onclick="readonly(this.checked)" type="checkbox">
+Read only-->
+<script type="text/javascript">
+				document.getElementById('edit').style.backgroundColor='#FFFFFF';
+				window.onLoad=unSelect();
+				usecss(true);
+				</script>
+<!--Note: "Xanga" is copywrite to Xanga.com, Inc.-->
+
+</body>
+</html>

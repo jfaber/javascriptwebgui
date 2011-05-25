@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+<script type="text/javascript" src="windowSys.js"></script>
+<script type="text/javascript" src="menuSys.js"></script>
+
+
+<script type="text/javascript">
+/*
+
+*/
+var inEdit=true;
+var URLSplit=top.location.href;
+URLSplit=URLSplit.split('?');
+var IE = document.all?true:false;// Is the browser IE??
+	if(!IE)
+		setTimeout('document.body.setAttribute("onmousemove","if(inEdit){getClickID(event)}")',500);
+	else
+		setTimeout('document.onmousemove=function(){if(inEdit){getClickID(event)}}',500);
+	
+function openTimer()
+{
+var theTitle=prompt("Enter a client Name.","");
+var theHTMLCode='';
+theHTMLCode+='<span id="'+theTitle+'theHour">0</span> Hours <span id="'+theTitle+'theMin">0</span> Min <span id="'+theTitle+'theSec">0</span> Sec ';
+theHTMLCode+='<br /> <input type="button" id="'+theTitle+'SS" value="Start" onclick="if(this.value==\'Start\'){this.value=\'Stop\'; incrementTimer(\''+theTitle+'\')}else{this.value=\'Star\'}" />';
+
+createSimpleWindow(theTitle,theHTMLCode,theTitle);
+}
+
+function incrementTimer(theIDs)
+{
+if(document.getElementById(theIDs+"SS"))
+{
+	if(document.getElementById(theIDs+"SS").value=="Stop")
+		{
+		setTimeout("incrementTimer('"+theIDs+"')",1000);
+		document.getElementById(theIDs+"theSec").innerHTML++;
+		if(document.getElementById(theIDs+"theSec").innerHTML>=60)
+			{
+			document.getElementById(theIDs+"theSec").innerHTML-=60;
+			document.getElementById(theIDs+"theMin").innerHTML++;
+			}
+		if(document.getElementById(theIDs+"theMin").innerHTML>=60)
+			{
+			document.getElementById(theIDs+"theMin").innerHTML-=60;
+			document.getElementById(theIDs+"theHour").innerHTML++;
+			}
+		}
+	}
+}
+</script>
+</head>
+<body>
+<div style="text-align:center" > 
+	<input type="button" value="Open New Timer"onclick="openTimer()"/>
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,73 @@
+APC
+APC-SBS
+1.Memory Alert-Is a SQL server which is filling the memory
+2.Has updates that must be installed, will likely result in a system reset.
+
+CBLH
+CBLH-SERVER01 & 02
+1. Both are using SQL 
+
+Dudick
+DUDICK-SBS08 
+1. Has a major update required, likeley requires restart.
+DC02
+1. Memory:Is running SQL and is 2000 bleh
+
+FairView
+Exchange1
+1. Memory: Being cased by Store.exe: 
+
+Grady & Associates
+GRADY-SBS
+1. Memory: Being caused by Store.exe also by w3wp.exe 
+
+Howley Bread
+PANINI
+1. Had a MS exchange Edge sync service error. Service is disabled. I disabled monitoring.
+BAGEL
+1. Memory: SQL Running.
+
+Joslyn Manufacturing
+DCC-ASSISTANT
+1. Could not be pinged when I checkd it. Works now, however.
+
+Lakewood Ciry Schools
+LKWD4
+1. Not backup up probably needs restarted see WO:  335619
+LKWD3
+1. Was not monitoring. The PT service was stopped. I restarted it.
+LKWD83 
+1. Not responding to ping, Phil said: It is not being currently used, Ill look on a few
+
+LCADA
+LCADA-SBS
+1. Memory: SQL Running.
+
+Leiken Law
+LEIKEN-SBS
+1. Requires updates
+
+Lorain ADAS Board
+1. Memory: Both store.exe and SQL running
+
+MBA Focus
+GTSDATA
+1. Memory: SQL service running.
+GTSDATA2
+1. DB Error, Phil is working on this.
+FOCUSNET1
+1. Using a ton of network was over 80% usage, Cleared Error
+
+St Eds.
+SEHSAPPS
+1. DS1410D failed to start? Not sure what this is.
+
+Vendors Exchange
+VEII-MAIL
+1. Memory: Running Store.exe, SQL and is hosting a site, Yikes.
+
+Apps and referance.
+DS1410D-http://www.file.net/process/ds1410d.sys.html
+store.exe This is exchange: http://msexchangeteam.com/archive/2004/08/02/206012.aspx
+w3wp.exe This is the web server: http://www.processlibrary.com/directory/files/w3wp/
+SQL http://support.microsoft.com/kb/321363

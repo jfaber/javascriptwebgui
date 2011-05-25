@@ -1,0 +1,4 @@
+This document is created by Jeff Faber c1a9r8d5@gmail.com
+
+Just use the directory tree the same way it is set up in this zip file, if the images
+ are in a different location replace all "images/" with your new path in the photos.htm file. 

@@ -1,0 +1,57 @@
+<HTML>
+<HEAD>
+<TITLE>Web GUI by Jeff Faber</TITLE>
+
+<SCRIPT>
+//Created By Jeff Faber, Copyright May 23, 2005
+var URLSplit=top.location.href;
+var URL=URLSplit;
+URLSplit=URLSplit.split('?');
+		if(URLSplit[1]=='edit')
+		{
+			if(navigator.appName!="Microsoft Internet Explorer")
+			{	
+				if(confirm('A new editing window is about to open. Is this Ok? Also note:Popups must be enabled for this page.'))
+					var Editor=window.open(prompt('Location of the editor? Please Note:The script MUST be in the same domain and have the same protocol as this page.','pleaseWork.htm'),'Editor','dependent=yes,fullscreen=no,dialog=yes,z-lock=yes, status=no, height=190, width=1090,toolbar=0,scrollbars=1,resizable=1,top = 800');
+			}
+			else
+			{
+				alert('Editing may not be fully compatable with Internet Explorer. This GUI is best used with Firefox, which is free at Mozilla.org.');
+				if(confirm('A new editing window is about to open. Is this Ok? Also note:Popups must be enabled for this page.'))
+					Editor = showModalDialog(prompt('Location of the editor? Please Note:The script MUST be in the same domain and have the same protocol as this page.','pleaseWork.htm'),'Editor','');
+			}
+		}
+function editFocus()
+{
+	if(Editor&&window.Editor.document.props.onTop.value=="true")
+		Editor.focus();
+}
+function runPage()
+{
+	//if(document.getElementById('StartPage')&&URLSplit[0])
+		//document.getElementById('StartPage').innerHTML= '<a href="' + URLSplit[0] + '?edit">' + URLSplit[0] + '?edit</a>';
+
+	if(document.getElementById('StartPage')&&URLSplit[1]!='edit')
+		document.getElementById('StartPage').innerHTML= 'To edit this page please go here:<a href="' + URL + '?edit">' + URL + '?edit</a>';
+
+}
+</SCRIPT>
+</HEAD>
+<BODY bgcolor="#FFFFFF" id="bodyID" topmargin="1" leftmargin="1" onFocus="editFocus();">
+<table width="100%" cellpadding="0" cellspacing="0">
+	<tr>
+		<TD width="100%" height="100%" valign="top" >
+				<div id="tableSet">
+				Empty Page. <div id="StartPage">Please Press "Start". If the edit window did not open, please assure that you have disabled any popup blocker and reload the page</div>
+				
+				</div>
+
+		</td>
+	</tr>
+</table>
+<div id="titleChange"></div>
+<script>
+document.onLoad=runPage();
+</script>
+</BODY>
+</HTML>

@@ -1,0 +1,522 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Cafe Location</title>
+</head>
+
+<body bgcolor="#FFFF99" leftmargin="25">
+
+<!--webbot BOT="GeneratedScript" PREVIEW=" " startspan --><script Language="JavaScript" Type="text/javascript"><!--
+function FrontPage_Form1_Validator(theForm)
+{
+
+  if (theForm.Cafe_Location.selectedIndex < 0)
+  {
+    alert("Please select one of the \"Cafe Location\" options.");
+    theForm.Cafe_Location.focus();
+    return (false);
+  }
+
+  if (theForm.Cafe_Location.selectedIndex == 0)
+  {
+    alert("The first \"Cafe Location\" option is not a valid selection.  Please choose one of the other options.");
+    theForm.Cafe_Location.focus();
+    return (false);
+  }
+
+  if (theForm.Effective_Date.value == "")
+  {
+    alert("Please enter a value for the \"Effective Date\" field.");
+    theForm.Effective_Date.focus();
+    return (false);
+  }
+
+  if (theForm.Effective_Date.value.length < 4)
+  {
+    alert("Please enter at least 4 characters in the \"Effective Date\" field.");
+    theForm.Effective_Date.focus();
+    return (false);
+  }
+
+  if (theForm.Name.value == "")
+  {
+    alert("Please enter a value for the \"Name\" field.");
+    theForm.Name.focus();
+    return (false);
+  }
+
+  if (theForm.Name.value.length < 1)
+  {
+    alert("Please enter at least 1 characters in the \"Name\" field.");
+    theForm.Name.focus();
+    return (false);
+  }
+
+  if (theForm.SSN.value == "")
+  {
+    alert("Please enter a value for the \"SSN\" field.");
+    theForm.SSN.focus();
+    return (false);
+  }
+
+  if (theForm.SSN.value.length < 9)
+  {
+    alert("Please enter at least 9 characters in the \"SSN\" field.");
+    theForm.SSN.focus();
+    return (false);
+  }
+
+  if (theForm.SSN.value.length > 11)
+  {
+    alert("Please enter at most 11 characters in the \"SSN\" field.");
+    theForm.SSN.focus();
+    return (false);
+  }
+
+  var checkOK = "0123456789-.,";
+  var checkStr = theForm.Rate_Amount.value;
+  var allValid = true;
+  var validGroups = true;
+  var decPoints = 0;
+  var allNum = "";
+  for (i = 0;  i < checkStr.length;  i++)
+  {
+    ch = checkStr.charAt(i);
+    for (j = 0;  j < checkOK.length;  j++)
+      if (ch == checkOK.charAt(j))
+        break;
+    if (j == checkOK.length)
+    {
+      allValid = false;
+      break;
+    }
+    if (ch == ".")
+    {
+      allNum += ".";
+      decPoints++;
+    }
+    else if (ch == "," && decPoints != 0)
+    {
+      validGroups = false;
+      break;
+    }
+    else if (ch != ",")
+      allNum += ch;
+  }
+  if (!allValid)
+  {
+    alert("Please enter only digit characters in the \"Rate Amount\" field.");
+    theForm.Rate_Amount.focus();
+    return (false);
+  }
+
+  if (decPoints > 1 || !validGroups)
+  {
+    alert("Please enter a valid number in the \"Rate_Amount\" field.");
+    theForm.Rate_Amount.focus();
+    return (false);
+  }
+
+  if (theForm.Transfer_From.selectedIndex < 0)
+  {
+    alert("Please select one of the \"Transfer_From\" options.");
+    theForm.Transfer_From.focus();
+    return (false);
+  }
+
+  if (theForm.Transfer_To.selectedIndex < 0)
+  {
+    alert("Please select one of the \"Transfer_To\" options.");
+    theForm.Transfer_To.focus();
+    return (false);
+  }
+
+  if (theForm.Manager_Completing.value == "")
+  {
+    alert("Please enter a value for the \"Manager_Completing\" field.");
+    theForm.Manager_Completing.focus();
+    return (false);
+  }
+
+  if (theForm.Manager_Completing.value.length < 1)
+  {
+    alert("Please enter at least 1 characters in the \"Manager_Completing\" field.");
+    theForm.Manager_Completing.focus();
+    return (false);
+  }
+  return (true);
+}
+//--></script><!--webbot BOT="GeneratedScript" endspan --><form method="POST" name="FrontPage_Form1" action="../_vti_bin/shtml.dll/hrconnection/payrollEDFform.frm.htm" onsubmit="return FrontPage_Form1_Validator(this)" language="JavaScript" webbot-action="--WEBBOT-SELF--">
+  <!--webbot bot="SaveResults" s-email-format="TEXT/PRE" s-email-address="hrsupport@howleybread.com" b-email-label-fields="TRUE" b-email-subject-from-field="TRUE" s-email-subject="Name" s-date-format="%A, %d. %B %Y" s-builtin-fields="Date" startspan --><input TYPE="hidden" NAME="VTI-GROUP" VALUE="0"><!--webbot bot="SaveResults" endspan i-checksum="43374" --><p style="margin-top: 0; margin-bottom: 0" align="center">
+  <b><font size="4">Howley Bread Group, Ltd.</font></b></p>
+  <p style="margin-top: 0; margin-bottom: 0" align="center"><font size="4"><b>
+  Employee Data Form - Changes Only</b></font></p>
+  <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+  <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#FFFFFF" id="AutoNumber1" height="337">
+    <tr>
+      <td height="1">
+      <p style="margin-top: 0; margin-bottom: 0" align="right"><b>Cafe Location</b></p>
+      </td>
+      <td height="1" colspan="4">
+      <!--webbot bot="Validation" S-Display-Name="Cafe Location" B-Value-Required="TRUE" B-Disallow-First-Item="TRUE" --><select size="1" name="Cafe_Location" tabindex="1">
+      <option selected>*Choose Location*</option>
+      <option>3855 - Cranston, RI</option>
+      <option>3856 - N. Attleboro, MA</option>
+      <option>3857 - Smithfield, RI</option>
+      <option>3858 - Glastonbury, CT</option>
+      <option>3859 - Manchester, CT</option>
+      <option>3860 - N. Dartmouth, MA</option>
+      <option>3861 - Newport, RI</option>
+      <option>3862 - Enfield, CT</option>
+      <option>3863 - Bristol, CT</option>
+      <option>3865 - Waterford, CT</option>
+      <option>3866 - E. Greenwich, RI</option>
+      <option>3867 - Canton, CT</option>
+      <option>3868 - Newington, CT</option>
+      <option>3869 - Seekonk, MA</option>
+      <option>3871 - Foxwoods, CT</option>
+      <option>3872 - W. Hartford, CT</option>
+      <option>3873 - Plainville, MA</option>
+      <option>3874 - Wakefield, RI</option>
+      <option>3875 - Warwick, RI</option>
+      <option>3878 - Buckland, CT</option>
+      <option>ADMN - Administration</option>
+      </select></td>
+    </tr>
+    <tr>
+      <td height="3" colspan="5">
+      <div style="width: 805; height: 28; ">
+        <p align="left" style="margin-top: 0; margin-bottom: 0"><b>Check One:&nbsp; </b>
+        <input type="checkbox" name="Pay_Rate_Change" value="Pay Rate Change" tabindex="2">Pay Rate Change&nbsp;
+        <input type="checkbox" name="Address_Change" value="Address Change" tabindex="2">Address Change&nbsp;
+        <input type="checkbox" name="Termination" value="Termination" tabindex="2">Termination
+        <input type="checkbox" name="Transfer" value="Transfer" tabindex="2">Transfer&nbsp;
+        <input type="checkbox" name="Other" value="Other (see below)" tabindex="2">Other&nbsp;
+        <input type="text" name="Other_Descrition" size="20" tabindex="2"><blockquote>
+          <blockquote>
+        <p align="left" style="margin-top: 0; margin-bottom: 0">
+			<p style="font-weight:bold">
+			Important note:  One change per EDF please.  Do not combine EDF’s.
+			</p>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Effective Date (last day worked if termination)&nbsp;
+        <!--webbot bot="Validation" s-display-name="Effective Date" b-value-required="TRUE" i-minimum-length="4" --><input type="text" name="Effective_Date" size="20" tabindex="2"></blockquote>
+        </blockquote>
+      </div>
+      </td>
+    </tr>
+    <tr>
+      <td align="left" height="19" style="border-top-style: solid; border-top-color: #000000">
+      <p style="margin-top: 0; margin-bottom: 0" align="right"><u><b>Employee Information</b></u></td>
+      <td align="left" height="19" style="border-top-style: solid; border-top-color: #000000" colspan="4">
+      &nbsp;</td>
+    </tr>
+    <tr>
+      <td align="right" height="21">
+      <p style="margin-top: 0; margin-bottom: 0">Name</td>
+      <td height="21" colspan="4">
+      <!--webbot bot="Validation" b-value-required="TRUE" i-minimum-length="1" --><input type="text" name="Name" size="45" tabindex="3"></td>
+    </tr>
+    <tr>
+      <td align="right" height="22">
+      <p style="margin-top: 0; margin-bottom: 0">Street Address</td>
+      <td height="22" colspan="4">
+      <input type="text" name="Address" size="45" tabindex="4"></td>
+    </tr>
+    <tr>
+      <td align="right" height="22">
+      <p style="margin-top: 0; margin-bottom: 0">Address2</td>
+      <td height="22" colspan="4">
+      <input type="text" name="Address2" size="45" tabindex="5"></td>
+    </tr>
+    <tr>
+      <td align="right" height="22">
+      <p style="margin-top: 0; margin-bottom: 0">City</td>
+      <td height="22" colspan="4">
+      <input type="text" name="City" size="30" tabindex="6">&nbsp;&nbsp;&nbsp;&nbsp; 
+      State<input type="text" name="State" size="16" tabindex="7">&nbsp;&nbsp;&nbsp;&nbsp; 
+      Zip<input type="text" name="Zip" size="10" tabindex="8"></td>
+    </tr>
+    <tr>
+      <td align="right" height="22">
+      <p style="margin-top: 0; margin-bottom: 0">Social Security Number</td>
+      <td height="22" colspan="4">
+      <!--webbot bot="Validation" b-value-required="TRUE" i-minimum-length="9" i-maximum-length="11" --><input type="text" name="SSN" size="20" tabindex="9" maxlength="11">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Home Phone 
+      (optional)<input type="text" name="Phone" size="16" tabindex="10"></td>
+    </tr>
+    <tr>
+      <td align="right" height="22">
+      &nbsp;</td>
+      <td height="22" colspan="4">
+      &nbsp;</td>
+    </tr>
+    <tr>
+      <td align="right" height="22"><u><b>Job Data</b></u></td>
+      <td height="19" colspan="4">&nbsp;</td>
+    </tr>
+    <tr>
+      <td align="right" height="22">Department</td>
+      <td height="22">
+      <select size="1" name="Department" tabindex="11">
+      <option selected value=" ">select</option>
+      <option value="1 - General Manager">1 - General Manager</option>
+      <option value="2 - Assistant Manager">2 - Assistant Manager</option>
+      <option value="5 - Crew">5 - Crew</option>
+      <option value="6 - Baker">6 - Baker</option>
+      <option value="7 - Shift Supervisor">7 - Shift Supervisor</option>
+      <option value="IN - Inactive">IN - Inactive</option>
+      <option value="69 - Training/MIT Overhead">69 - Training/MIT Overhead</option>
+      <option value="78 - BMM Overhead">78 - BMM Overhead</option>
+      <option value="79 - DM Overhead">79 - DM Overhead</option>
+      <option value="87 - Maint. Overhead">87 - Maint. Overhead</option>
+      <option value="88 - Mktg. Overhead">88 - Mktg. Overhead</option>
+      <option value="89 - Ops Support Overhead">89 - Ops Support Overhead</option>
+      </select></td>
+      <td height="22" colspan="2">&nbsp;</td>
+      <td height="22">
+      &nbsp;</td>
+    </tr>
+    <tr>
+      <td align="right" height="22">FT/PT Status</td>
+      <td height="22"><select size="1" name="Status" tabindex="12">
+      <option selected value=" ">select</option>
+      <option value="Full Time">Full Time</option>
+      <option value="Part Time">Part Time</option>
+      </select></td>
+      <td height="22" colspan="2">&nbsp;</td>
+      <td height="22">
+      &nbsp;</td>
+    </tr>
+    <tr>
+      <td align="right" height="22">Rate Type</td>
+      <td height="22">
+      <select size="1" name="RateType" tabindex="13">
+      <option selected value=" ">select</option>
+      <option value="Hourly">Hourly</option>
+      <option value="Salary">Salary</option>
+      </select></td>
+      <td height="22" colspan="2">&nbsp;</td>
+      <td height="22">
+      &nbsp;</td>
+    </tr>
+    <tr>
+      <td align="right" height="22">New Rate Amount</td>
+      <td height="22">
+      <!--webbot bot="Validation" s-display-name="Rate Amount" s-data-type="Number" s-number-separators=",." --><input type="text" name="Rate_Amount" size="20" tabindex="14">&nbsp;&nbsp;&nbsp;&nbsp; </td>
+      <td height="22" colspan="2">&nbsp;</td>
+      <td height="22">
+      &nbsp;</td>
+    </tr>
+    <tr>
+      <td align="right" height="22">&nbsp;</td>
+      <td height="22">
+      &nbsp;</td>
+      <td height="22" colspan="2">&nbsp;</td>
+      <td height="22">
+      &nbsp;</td>
+    </tr>
+    <tr>
+      <td align="right" height="22"><u><b>W-4 Tax Settings</b></u></td>
+      <td height="22">&nbsp;</td>
+      <td height="22" colspan="2">&nbsp;</td>
+      <td height="22">
+      &nbsp;</td>
+    </tr>
+    <tr>
+      <td align="right" height="22">Filing Status</td>
+      <td height="22" colspan="4">
+      <input type="radio" name="Filing_Status" value="Single" tabindex="15">Single&nbsp;&nbsp;<input type="radio" name="Filing_Status" value="Married" tabindex="16">Married&nbsp;&nbsp;&nbsp;&nbsp; # Exemptions<input type="text" name="Exemptions" size="20" tabindex="17"></td>
+    </tr>
+    <tr>
+      <td align="right" height="22" style="border-bottom-style: solid; border-bottom-color: #000000" colspan="5">&nbsp;</td>
+    </tr>
+    <tr>
+      <td height="36" colspan="5">
+      <div style="width: 805; height: 7; ">
+        <p align="left"><b>Vacation Time Taken:</b>&nbsp; Starting Date:<input type="text" name="Vacation_Start_Date" size="18" tabindex="18">&nbsp; 
+        Ending Date:<input type="text" name="Vacation_End_Date" size="18" tabindex="19">&nbsp; # of 
+        Hours Taken:<input type="text" name="Vacation_Hours" size="8" tabindex="20"></div>
+      </td>
+    </tr>
+    <tr>
+      <td align="right" height="3" colspan="5" style="border-bottom-style: solid; border-bottom-color: #000000">
+      </td>
+    </tr>
+    <tr>
+      <td height="37" colspan="5">
+      <div style="width: 805; height: 24; ">
+        <p align="left"><b>Transfers:</b>&nbsp; From Unit
+        <!--webbot bot="Validation" S-Display-Name="Transfer_From" B-Value-Required="TRUE" --><select size="1" name="Transfer_From" tabindex="21">
+      <option selected>select</option>
+      <option>3855 - Cranston, RI</option>
+      <option>3856 - N. Attleboro, MA</option>
+      <option>3857 - Smithfield, RI</option>
+      <option>3858 - Glastonbury, CT</option>
+      <option>3859 - Manchester, CT</option>
+      <option>3860 - N. Dartmouth, MA</option>
+      <option>3861 - Newport, RI</option>
+      <option>3862 - Enfield, CT</option>
+      <option>3863 - Bristol, CT</option>
+      <option>3865 - Waterford, CT</option>
+      <option>3866 - E. Greenwich, RI</option>
+      <option>3867 - Canton, CT</option>
+      <option>3868 - Newington, CT</option>
+      <option>3869 - Seekonk, MA</option>
+      <option>3871 - Foxwoods, CT</option>
+      <option>3872 - W. Hartford, CT</option>
+      <option>3873 - Plainville, MA</option>
+      <option>3874 - Wakefield, RI</option>
+      <option>3875 - Warwick, RI</option>
+      <option>3878 - Buckland, CT</option>
+      <option>3879 - Lisbon, CT</option>	  
+      <option>ADMN - Administration</option>
+      </select>&nbsp; To Unit
+        <!--webbot bot="Validation" S-Display-Name="Transfer_To" B-Value-Required="TRUE" --><select size="1" name="Transfer_To" tabindex="22">
+      <option selected>select</option>
+      <option>3855 - Cranston, RI</option>
+      <option>3856 - N. Attleboro, MA</option>
+      <option>3857 - Smithfield, RI</option>
+      <option>3858 - Glastonbury, CT</option>
+      <option>3859 - Manchester, CT</option>
+      <option>3860 - N. Dartmouth, MA</option>
+      <option>3861 - Newport, RI</option>
+      <option>3862 - Enfield, CT</option>
+      <option>3863 - Bristol, CT</option>
+      <option>3865 - Waterford, CT</option>
+      <option>3866 - E. Greenwich, RI</option>
+      <option>3867 - Canton, CT</option>
+      <option>3868 - Newington, CT</option>
+      <option>3869 - Seekonk, MA</option>
+      <option>3871 - Foxwoods, CT</option>
+      <option>3872 - W. Hartford, CT</option>
+      <option>3873 - Plainville, MA</option>
+      <option>3874 - Wakefield, RI</option>
+      <option>3875 - Warwick, RI</option>
+      <option>3878 - Buckland, CT</option>
+      <option>3879 - Lisbon, CT</option>
+      <option>ADMN - Administration</option>
+      </select>&nbsp; </div>
+      </td>
+    </tr>
+    <tr>
+      <td align="right" height="6" colspan="5" style="border-bottom-style: solid; border-bottom-color: #000000">
+      </td>
+    </tr>
+    <tr>
+      <td align="right" height="33" colspan="5">
+      <p align="left"><b>Terminations:&nbsp;&nbsp;&nbsp;&nbsp; </b></td>
+    </tr>
+    <tr>
+      <td align="right" height="23" colspan="5" valign="bottom">
+      <p align="left">Reason for Separation - Please check the reason that most 
+      closely describes the employee's separation.</td>
+    </tr>
+    <tr>
+      <td align="left" height="31" colspan="5">
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      <input type="checkbox" name="Term_Reason" value="Lack of Work" tabindex="23">Lack of Work</td>
+    </tr>
+    <tr>
+      <td align="left" height="33" colspan="5">
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      <input type="checkbox" name="Term_Reason" value="Voluntary Quit" tabindex="24">Voluntary Quit&nbsp;&nbsp;&nbsp;&nbsp; Select reason:&nbsp;
+      <select size="1" name="Term_Reason" tabindex="25">
+      <option selected value=" ">select</option>
+      <option value="Job Abandonement (no call/no show)">Job Abandonement (no call/no show)
+      </option>
+      <option value="Personal Reasons">Personal Reasons</option>
+      <option value="Accept Other Employment">Accept Other Employment</option>
+      <option value="Relocate">Relocate</option>
+      <option value="Medical Reasons">Medical Reasons</option>
+      <option value="Dissatisfaction">Dissatisfaction with hours, rate of pay, working conditions, etc.
+      </option>
+      <option>Other</option>
+      </select></td>
+    </tr>
+    <tr>
+      <td align="left" height="37" colspan="5">
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      <input type="checkbox" name="Term_Reason" value="Discharge" tabindex="26">Discharge&nbsp;&nbsp;&nbsp;&nbsp; Select reason:&nbsp;
+      <select size="1" name="Term_Reason" tabindex="27">
+      <option selected value=" ">select</option>
+      <option value="Unsatisfactory Work Performance">Unsatisfactory Work Performance
+      </option>
+      <option value="Attendance/Tardiness">Attendance/Tardiness</option>
+      <option value="Violation of Company Policy">Violation of Company Policy
+      </option>
+      <option value="Falsification">Falsification</option>
+      <option value="Insubordination">Insubordination</option>
+      <option>Other</option>
+      </select></td>
+    </tr>
+    <tr>
+      <td align="left" height="32" colspan="5">
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      <input type="checkbox" name="Term_Reason" value="Other" tabindex="28">Other&nbsp;&nbsp;&nbsp;&nbsp; Please provide details:&nbsp;
+      <input type="text" name="Term_Reason" size="65" tabindex="29" value=" "></td>
+    </tr>
+    <tr>
+      <td align="left" height="32" colspan="5">
+      Eligible for Rehire?&nbsp;&nbsp;
+      <input type="radio" name="Eligible_Rehire" value="Yes" tabindex="30">Yes&nbsp;&nbsp;&nbsp;
+      <input type="radio" name="Eligible_Rehire" value="No" tabindex="31">No</td>
+    </tr>
+    <tr>
+      <td align="right" height="22" style="border-bottom-style: solid; border-bottom-color: #000000">
+      &nbsp;</td>
+      <td height="22" style="border-bottom-style: solid; border-bottom-color: #000000">&nbsp;</td>
+      <td height="22" style="border-bottom-style: solid; border-bottom-color: #000000">&nbsp;</td>
+      <td height="22" style="border-bottom-style: solid; border-bottom-color: #000000">&nbsp;</td>
+      <td height="22" style="border-bottom-style: solid; border-bottom-color: #000000">&nbsp;</td>
+    </tr>
+    <tr>
+      <td align="right" height="82" style="border-bottom-style: solid; border-bottom-color: #000000" colspan="5" rowspan="2">
+      <p align="left" style="margin-top: 0; margin-bottom: 0"><b>Other Instructions:<textarea rows="4" name="Other_Instr" cols="60" tabindex="32"></textarea></b></td>
+    </tr>
+    <tr>
+      <td height="27">
+      <p style="margin-top: 0; margin-bottom: 0"></td>
+      <td height="27"></td>
+      <td height="27"></td>
+      <td height="27"></td>
+      <td height="27"></td>
+    </tr>
+    <tr>
+      <td height="35">
+      <p align="left">
+      <b>Manager Completing </b></td>
+      <td height="35" colspan="4">
+      <!--webbot bot="Validation" s-display-name="Manager_Completing" b-value-required="TRUE" i-minimum-length="1" --><input type="text" name="Manager_Completing" size="45" tabindex="33"></td>
+    </tr>
+    </table>
+  <p style="margin-top: 0; margin-bottom: 0" align="center">
+  &nbsp;</p>
+  <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="93%" id="AutoNumber2">
+    <tr>
+      <td width="403%">
+      <p align="center"><font face="Arial">
+  <input type="submit" value="Submit" name="Submit" tabindex="999"><input type="reset" value="Reset" name="Reset" tabindex="999"></font></td>
+    </tr>
+    <tr>
+      <td width="403%">
+      <p align="center">&nbsp;</p>
+      <p align="center">
+  <b>
+  <font face="Arial" size="2">FOR OFFICE USE ONLY</font></b></td>
+    </tr>
+    </table>
+  <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="93%" id="AutoNumber3" height="33">
+    <tr>
+      <td width="50%" height="33">HR Sign-off:<input type="text" name="HR_Signoff" size="44"></td>
+      <td width="50%" height="33">&nbsp;Date:<input type="text" name="HR_Signoff_Date" size="50"></td>
+    </tr>
+  </table>
+  <p style="margin-top: 0; margin-bottom: 0">&nbsp;</p>
+</form>
+
+</body>
+
+</html>
